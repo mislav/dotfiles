@@ -1,0 +1,50 @@
+desc 'Install the plugin in vendor/plugins/will_paginate'
+task 'will_paginate:install' do
+  require("fileutils")
+  wp_dir = "vendor/plugins/will_paginate"
+  begin
+    FileUtils.mkdir(wp_dir)
+  rescue Errno::EEXIST
+    $stderr.puts("#{wp_dir} already exists: updating ...")
+  end
+  url = "http://github.com/mislav/will_paginate/tarball/master"
+  system("wget -nv #{url} -O- | tar xzv -C #{wp_dir} --strip 1")
+end
+
+desc 'Add an external project as a sub-tree'
+task 'git:subtree:add' do
+  require("readline")
+  name = (print("Remote Name? ")
+  Readline.readline.chomp)
+  url = (print("Git Repo Url? ")
+  Readline.readline.chomp)
+  `git remote add #{name} #{url}`
+  `git config remote.#{name}.fetch refs/heads/*:refs/remotes/#{name}/*`
+  `git config --add remote.#{name}.fetch refs/tags/*:refs/remotes/#{name}/tags/*`
+  `git config remote.#{name}.tagopt --no-tags`
+  `git fetch #{name}`
+end
+
+desc 'Merge a sub-tree into your project'
+task 'git:subtree:merge' do
+  require("readline")
+  name = (print("Remote Name? ")
+  Readline.readline.chomp)
+  branch = (print("Remote Branch? ")
+  Readline.readline.chomp)
+  dest = (print("Destination? ")
+  Readline.readline.chomp)
+  `git merge -s ours --no-commit #{name}/#{branch}`
+  `git read-tree --prefix=#{dest} -u #{name}/#{branch}`
+  `git commit -m \"Merge branch '#{branch}' of #{name}\"`
+end
+
+desc 'Pull (fetch & merge) into an existing sub-tree'
+task 'git:subtree:pull' do
+  require("readline")
+  name = (print("Remote Name? ")
+  Readline.readline.chomp)
+  branch = (print("Remote Branch? ")
+  Readline.readline.chomp)
+  `git pull -s subtree #{name} #{branch}`
+end

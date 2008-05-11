@@ -1,0 +1,4 @@
+.*.sw?
+.svn
+*.pdf
+.DS_Store

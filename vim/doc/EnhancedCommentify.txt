@@ -1,0 +1,475 @@
+
+			    ENHANCED COMMENTIFY
+
+
+					    *EnhancedCommentify*
+This is the online help to EnhancedCommentify-script for Vim. It
+provides a convenient way to comment/decomment lines of code in source
+files. Currently several languages are supported (eg. Vim, C(++), Ada,
+Perl, Python and many more), but it is really easy to add other languages.
+(see 'Adding new languages')
+
+==============================================================================
+CONTENTS
+
+1. The main function			    |EnhComm-EnhCommentify|
+2. Changing behaviour (options)		    |EnhComm-Options|
+3. Adding new languages			    |EnhComm-NewLanguages|
+4. Changing the keybindings		    |EnhComm-Keybindings|
+5. Adding fallbacks			    |EnhComm-Fallbacks|
+6. Support				    |EnhComm-Support|
+7. Credits				    |EnhComm-Credits|
+8. Known problems			    |EnhComm-Bugs|
+==============================================================================
+
+1. The main function		*EnhComm-EnhCommentify* *EnhancedCommentify()*
+
+The function which does the main work is called EnhancedCommentify().
+It may also be called from outside the script. It takes two to four
+arguments.
+
+EnhancedCommentify(overrideEL, mode [, startBlock, endBlock])
+
+    overrideEL	-- may be 'yes', 'no' or ''. With UseSyntax option this
+		   value is guessed for every invocation of the function.
+		   However, if the passed value is not '', the given value
+		   will ocerride any checks.
+    mode	-- may be 'comment', 'decomment', 'guess' or 'first'.
+		   Specifies in what mode the script is run.
+		    comment   => region gets commented
+		    decomment => region gets decommented
+		    guess     => every line is checked wether it should
+		                 be commented or decommented. This is the
+				 traditional mode.
+		    first     => blocks is commented or decommented based
+				 on the very first line of the block. For
+				 single lines, this is identical to 'guess'
+    startBlock	-- number of line, where block starts (optional)
+    endBlock	-- number of line, where block ends (optional)
+
+If startBlock and endBlock are omitted, the function operates on the
+current line. Examples: >
+    EnhancedCommentify('yes', 'guess')
+    EnhancedCommentify('no', 'decomment', 55, 137)
+<
+The first call operates on the current line in the traditional way. Empty
+lines are also processed. The second call ignores empty lines and decomments
+all lines from line 55 up to line 137 inclusive.
+
+==============================================================================
+
+2. Changing behaviour (options)		    *EnhComm-Options*
+
+All options are boolean except those marked with a (*). Boolean variables
+may hold 'yes' or 'no' in any case or abbreviation. So in some sense the
+variables aren't really of boolean type: they are always strings. So don't
+forget the quotation marks! Examples: >
+    let g:EnhCommentifyUseAltKeys = 'yes'
+    let g:EnhCommentifyTraditionalMode = 'N'
+<
+
+'g:EnhCommentifyAltOpen'	string (default '|+') (*)
+	Defines the alternative placeholder for the opening string of
+	multipart comments.
+
+'g:EnhCommentifyAltClose'	string (default '+|') (*)
+	Same for closing string. Example: >
+    /* This is a problem in C. */
+<
+	If the above line would be commented again, it would produce
+	this wrong code: >
+    /*/* This is a problem in C. */*/
+<
+	The script recognises this problem and removes the inner comment
+	strings replacing them with the given alternative "escape"
+	strings. In the default configuration you get >
+    /*|+ This is a problem in C. +|*/
+<
+	which is fine. When decommenting the line, the alternative strings
+	are replaced with the original comment strings. These two options
+	have no meaning for languages, which have only singlepart comment
+	strings (like Perl or Scheme).
+
+'g:EnhCommentifyIdentString'	string (default '') (*)
+	Add this identity string to every comment made by the script. This
+	looks ugly and introduces non-standard comments, but solves several
+	problems (see |EnhComm-Bugs|). Setting this option makes only sense
+	in combination with 'g:EnhCommentifyTraditionalMode'. Examples:
+	The default setting would comment lines like this one >
+    /*foo();*/
+<
+	Setting g:EnhCommentifyIdentString to '+' would result in >
+    /*+foo();+*/
+<
+
+'g:EnhCommentifyRespectIndent'	string (default 'No')
+	Respect the indent of a line. The comment leader is inserted correctly
+	indented, not at the beginning of the line.
+	Examples:
+	g:EnhCommentifyRespectIndent = 'No' >
+		if (bar) {
+    /*		    foo();*/
+		}
+<
+	g:EnhCommentifyRespectIndent = 'Yes' >
+		if (bar) {
+		    /*foo();*/
+		}
+<
+
+'g:EnhCommentifyIgnoreWS'	string (default: 'Yes')
+	Ignore whitespace at the beginning of the line. This decomments
+	indented lines. This option has no effect when setting
+	g:EnhCommentifyRespectIndent to 'Yes'.
+
+'g:EnhCommentifyPretty'		string (default: 'No')
+	Add a whitespace between comment strings and code. Mainly for
+	readability. Comments without this space may still be decommented.
+	Examples:
+	g:EnhCommentifyPretty = 'No' >
+    /*foo();*/
+<
+	g:EnhCommentifyPretty = 'Yes' >
+    /* foo(); */
+<
+
+'g:EnhCommentifyBindPerBuffer'	string (default: 'No')
+	Make keybindings local to buffer.
+
+'g:EnhCommentifyBindUnknown'	string (default: 'Yes')
+	If the filetype is not known, don't add keybindings.
+	This option has no meaning, when g:EnhCommentifyBindPerBuffer is
+	set to 'No'.
+
+'g:EnhCommentifyBindInNormal'	string (default: 'Yes')
+'g:EnhCommentifyBindInInsert'
+'g:EnhCommentifyBindInVisual'
+	Add keybindings in normal/insert/visual mode.
+
+'g:EnhCommentifyUseAltKeys'	string (default: 'No')
+	Use alternative keybindings. <Meta-X> instead of <Leader>X. This
+	may cause trouble on some terminals. Eg. aterm has to be used with
+	'meta8: true' in the Xresources. This option has no meaning, when
+	g:EnhCommentifyUserBindings is set to 'Yes'.
+
+'g:EnhCommentifyTraditionalMode'    string (default: 'Yes')
+	The traditional commentify mode. Check for every line what action
+	should be performed. This option has no meaning, when
+	g:EnhCommentifyUserBindings is set to 'Yes'.
+
+'g:EnhCommentifyFirstLineMode'	string (default: 'No')
+	The decision, which action (commenting/decommenting) is performed
+	for a visual block, is based on the first line of this block.
+	This option has no meaning, when one of g:EnhCommentifyUserBindings
+	or g:EnhCommentifyTraditionalMode is set to 'Yes'.
+
+'g:EnhCommentifyUserMode'	string (default: 'No')
+	If this option is set to yes, the scripts lets you decide what to
+	do. Then there are several two different keybindings active, one
+	for commenting, one for decommenting. (see |EnhComm-Keybindings|)
+	This option has no effect if any of these options is set to 'yes':
+	  - g:EnhCommentifyTraditionalMode
+	  - g:EnhCommentifyFirstLineMode
+	  - g:EnhCommentifyUserBindings
+
+'g:EnhCommentifyUserBindings'	string (default: 'No')
+	This option allows you to choose your own keybindings, without much
+	trouble. Please see below (|EnhComm-Keybindings|) for more details.
+
+'g:EnhCommentifyUseBlockIndent'	string (default: 'No')
+	It's a bit difficult to explain, what this option does, so here are
+	some examples (The numbers are just line numbers!): >
+    1if (foo) {
+    2    bar();
+    3    baz();
+    4} else {
+    5    bar();
+    6    baz();
+    7}
+<
+	Commenting lines 1 to 7 in a visual block will give: >
+    /*if (foo) {*/
+    /*    bar();*/
+    /*    baz();*/
+    /*} else {*/
+    /*    bar();*/
+    /*    baz();*/
+    /*}*/
+<
+	Or commenting lines 3 to 5 will give: >
+    if (foo) {
+        bar();
+    /*    baz();*/
+    /*} else {*/
+    /*    bar();*/
+        baz();
+    }
+<
+	lines 2 to 3: >
+    if (foo) {
+        /*bar();*/
+        /*baz();*/
+    } else {
+        bar();
+        baz();
+    }
+<
+	However you should think about activating g:EnhCommentifyIgnoreWS,
+	if you do not use g:EnhCommentifyRespectIndent or you won't be
+	able to decomment lines, which are commented with this method,
+	if they have leading whitespace!
+
+'g:EnhCommentifyMultiPartBlocks'string (default: 'No')
+	When using a language with multipart-comments commenting a visual
+	block will result in the whole block commented in unit, not line
+	by line.
+	let g:EnhCommentifyMultiPartBlocks = 'yes' >
+    /*if (foo) {
+        frobnicate(baz);
+    }*/
+<
+
+'g:EnhCommentifyCommentsOp'	string (default: 'No')
+	!!! EXPERIMENTAL !!!
+	When set the comments option is parsed. This is currently only used
+	for the above option in order to set the middle part of the comment.
+	let g:EnhCommentifyCommentsOp = 'yes' >
+    /*if (foo) {
+     *    frobnicate(baz);
+     *}*/
+<
+
+'g:EnhCommentifyAlignRight'	string (default: 'No')
+	When commenting a visual block align the right hand side comment
+	strings. Examples:
+	let g:EnhCommentifyAlignRight = 'no' >
+    /*if (foo) {*/
+    /*    frobnicate(baz);*/
+    /*}*/
+<
+	let g:EnhCommentifyAlignRight = 'yes' >
+    /*if (foo) {          */
+    /*    frobnicate(baz);*/
+    /*}                   */
+<
+'g:EnhCommentifyUseSyntax'	string (default: 'No')
+	With this option set, the script tries to figure out which filetype to
+	use for every block by using the synID of the block. This improves
+	handling of embedded languages eg. CSS in HTML, Perl in VimL...
+	But be aware, that this feature currently relies on a special form
+	of the names of the syntax items. So it might not work with every
+	syntax file (see |EnhComm-Bugs|). It also calls synID only once for
+	every block! So the first line is significant. Be aware, that "cross"
+	commenting might cause problems. Examples: >
+    1<h1>a header</h1>
+    2<style type="text/css">
+    3table {
+    4	 align: left;
+    5}
+    6</style>
+    7<a href="some">link</a>
+<
+	Commenting line 1 will give: >
+    <!--<h1>a header</h1>-->
+    <style type="text/css">
+    table {
+	align: left;
+    }
+    </style>
+    <a href="some">link</a>
+<
+	Commenting line 4 will give: >
+    <h1>a header</h1>
+    <style type="text/css">
+    table {
+    /*    align: left;*/
+    }
+    </style>
+    <a href="some">link</a>
+<
+	You don't have to change anything. The filetype is still 'html'.
+	However marking the whole paragraph in one visual block and commenting
+	it, will result in the following: >
+    <!--<h1>a header</h1>-->
+    <!--<style type="text/css">-->
+    <!--table {-->
+    <!--    align: left;-->
+    <!--}-->
+    <!--</style>-->
+    <!--<a href="some">link</a>-->
+<
+	BTW: Don't expect any sense or correctness of code in these examples.
+
+==============================================================================
+
+3. Adding new languages			    *EnhComm-NewLanguages*
+
+Adding new languages is really easy. Just follow this step-by-step
+process. Assume we want to add the language Foobar. It uses multipart
+comments like C ("/*" <=> "bar", "*/" <=> "baz") and has the filetype
+"foo".
+
+ a) Open the script.
+ b) Go to the GetFileTypeSettings() function.
+ c) Now you should see the large "if"-tree. >
+    if fileType =~ '^\(c\|css\|...'
+	let b:EnhCommentifyCommentOpen = '/*'
+	let b:EnhCommentifyCommentClose = '*/'
+    elseif ...
+<
+ d) There are two buffer-local variables, which hold the different comment
+    strings. With this in mind we add Foobar: >
+    if fileType =~ '^\(c\|css\|...'
+	let b:EnhCommentifyCommentOpen = '/*'
+	let b:EnhCommentifyCommentClose = '*/'
+    elseif fileType == 'foo'
+	let b:EnhCommentifyCommentOpen = 'bar'
+	let b:EnhCommentifyCommentClose = 'baz'
+    elseif ...
+<
+     If the new language has only one comment string (like '#' in Perl), we
+     simply leave the CommentClose variable empty ('').
+
+That's it! Optionally you can also take step e) and f) in order to complete
+the setup, but this is not necessary.
+  e) Go to the CommentEmptyLines() function and add the new language to
+     the apropriate "if"-clause. The first will cause empty lines to be
+     processed also. The second make the script ignore empty lines for
+     this filetype. (My rule of thumb: single part comment strings
+     => "yes", multi part comment strings => "no") The default is to
+     ignore empty lines.
+  f) Some syntax-files are "broken". "Broken" in the sense, that the syntax
+     items are not named with xxxFoo or xxxBar, where xxx is the filetype.
+     This scheme seems to be used by ninety percent of all syntax files I saw.
+     This is currently the only way to get the filetype from the synID.
+     If your language may have other languages embedded, you should add
+     the filetype to "if"-clause in CheckPossibleEmbedding().
+
+==============================================================================
+
+4. Changing the keybindings		    *EnhComm-Keybindings*
+
+The script defines several <Plug>'s, which can be used to bind the different
+actions to different keys:
+  - <Plug>Comment / <Plug>DeComment
+  - <Plug>Traditional
+  - <Plug>FirstLine
+I don't think, that there's much, what needs to be explained. The <Plug>'s
+names are descriptive enough. For every <Plug> there is also its visual
+counterpart (eg. <Plug>VisualComment), which may be used to bind the actions
+for visual mode.
+
+Here an example from the standard bindings: >
+    imap <M-c> <Esc><Plug>Traditionalji
+<
+Clearly this definition binds <Meta-c> in insert mode to the traditional
+Commentify-functionality. Step-by-Step:
+  1) <Esc>:		leave insert mode
+  2) <Plug>Traditional:	execute the Commentify-function for this line
+  3) j:			go one line down
+  4) i:			go back to insert mode
+
+Another example, which adds a binding for visual mode with the new first-
+line-mode: >
+    vmap <Leader>c <Plug>VisualFirstLine
+<
+If you absolutely don't like the standards you can specify your own. Search
+for '***' in the script. Insert your bindings at this place and add >
+    let g:EnhCommentifyUserBindings = 'yes'
+<
+to your .vimrc. That should do the trick.
+
+4.1 Standard keybindings:
+
+				Meta-Keys:	    <Leader>Keys:
+
+Traditional-mode:
+Traditionial			<M-x>		    <Leader>x
+Traditionial + one line down	<M-c>		    <Leader>c
+
+FirstLine-mode:
+FirstLine			<M-x>		    <Leader>x
+FirstLine + one line down	<M-c>		    <Leader>c
+
+User-mode:
+Comment				<M-x>		    <Leader>x
+Comment	+ one line down		<M-c>		    <Leader>c
+DeComment			<M-y>		    <Leader>X
+DeComment + one line down	<M-v>		    <Leader>C
+
+==============================================================================
+
+5. Fallbacks				    *EnhComm-Fallbacks*
+
+Problems showed up with the php syntax file. In general it worked, but
+when there was simple text in a line it had an empty synID-name. Then
+the default kicked in using '&ft', which caused the php comments to be
+used, instead of the correct HTML comments. So it seemed necessary to
+provide a possibility to override the standard fallback. The solution
+looks like the following:
+
+1st step:
+  Create a .vim/ftplugin/foo_enhcomm.vim.
+
+2nd step:
+  Add the fallback-setting function call:
+  call EnhCommentifyFallback4Embedded('synFiletype == "bar"', "baz")
+
+3rd step:
+  Have fun! :)
+
+So the general idea is: You specify a test and a fallback filetype.
+In the test 'synFiletype' can be used to reference the name tag of the
+current synID. For PHP this looks like: >
+    call EnhCommentifyFallback4Embedded('synFiletype == ""', "html")
+<
+
+==============================================================================
+
+6. Support				    *EnhComm-Support*
+
+Suggestions, feature requests and bugreports are always welcome! You can
+contact me with <Brandels_Mikesh@web.de>.
+
+==============================================================================
+
+7. Credits				    *EnhComm-Credits*
+
+The following people contributed to EnhancedCommentify resp. reported
+bugs: (in temporal order)
+ - Vincent Nijs (this script is based on his ToggleCommentify)
+ - Mary Ellen Foster
+ - Scott Stirling
+ - Zak Beck
+ - Xiangjiang Ma
+ - Steve Butts
+ - Preben Randhol
+ - John Orr
+ - Luc Hermite
+ - Brett Calcott
+
+Thanks to John Orr and Xiangjiang Ma for their rich feedback and to Luc
+Hermite for some good improvement suggestions.
+
+==============================================================================
+
+8. Known Problems			    *EnhComm-Bugs*
+
+If g:EnhCommentifyFirstLineMode is used, the following block produces wrong
+code:  >
+    /* This is a comment and not programm code. */
+    foo = bar;
+    baz();
+<
+With indent string, the script recognises, that the comment is not created
+by the script and correctly comments the block.
+
+Lines like the following will not be correctly decommented. >
+    /*|+ foo +| bar |+ baz +|*/
+<
+The script currently relies on the assumption, that the names of syntax items
+are of the form '<Filetype in lower case><Uppercase char><Rest>', eg. "phpXy"
+or "htmlFooBar". This seems to be true except for some rare, esoteric cases.
+
+==============================================================================
+vim: ft=help:norl:ts=8:tw=78

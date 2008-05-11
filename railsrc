@@ -1,0 +1,15 @@
+#!/usr/bin/ruby
+# log to
+def l(stream = STDOUT)
+  ActiveRecord::Base.logger = Logger.new(stream)
+  ActiveRecord::Base.clear_active_connections!
+  "logger reset!"
+end
+
+# def method_missing(method, *args, &block)
+#   User.find_by_login(method.to_s) || super
+# end 
+
+def sql(query)
+  ActiveRecord::Base.connection.select_all(query)
+end 

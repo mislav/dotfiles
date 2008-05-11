@@ -1,0 +1,16 @@
+[user]
+	name = Mislav Marohnić
+	email = mislav.marohnic@gmail.com
+[apply]
+	whitespace = nowarn
+[alias]
+	co = checkout
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[core]
+	excludesfile = /home/mislav/.gitignore
+  editor = vim -c 'set ft=diff'
+[mirror]
+	summary = true
