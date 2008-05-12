@@ -1,6 +1,6 @@
-set mainfont {Helvetica 10}
-set textfont {Courier 10}
-set uifont {Helvetica 10 bold}
+set mainfont {Arial 11}
+set textfont {Inconsolata 11}
+set uifont {Arial 10 bold}
 set tabstop 2
 set findmergefiles 0
 set maxgraphpct 50
