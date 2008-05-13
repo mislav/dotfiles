@@ -56,11 +56,12 @@ alias irb='irb --simple-prompt -r irb/completion -rubygems'
 # really awesome function, use: cdgem <gem name>, cd's into your gems directory
 # and opens gem that best matches the gem name provided
 function cdgem {
-  cd /usr/lib/ruby/gems/1.8/gems/
+  cd `gem env gemdir`/gems
   cd `ls | grep $1 | sort | tail -1`
 }
 function gemdoc {
-  firefox /usr/lib/ruby/gems/1.8/doc/`ls /usr/lib/ruby/gems/1.8/doc | grep $1 | sort | tail -1`/rdoc/index.html
+  GEMDIR=`gem env gemdir`/doc
+  gnome-open $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`/rdoc/index.html
 }
 
 alias qri='qri -w 106'
@@ -69,11 +70,11 @@ alias fri='fri -w 106'
 #########
 # RAILS #
 #########
-alias ss='script/server' # start up the beast
-alias sr='kill -USR2 `cat tmp/pids/mongrel.pid`' # restart detached Mongrel
-alias sst='kill `cat tmp/pids/mongrel.pid`' # restart detached Mongrel
 alias sc='script/console'
-alias a='autotest -rails' # makes autotesting even quicker
+alias ss='script/server' # start up the beast; use "ss -d" to detach
+alias sr='kill -USR2 `cat tmp/pids/mongrel.pid`' # restart daemonized Mongrel
+alias sst='kill `cat tmp/pids/mongrel.pid`' # stop daemonized Mongrel
+alias a='autotest -rails'
 
 # see http://railstips.org/2007/5/31/even-edgier-than-edge-rails
 function edgie() { 
