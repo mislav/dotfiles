@@ -1,6 +1,6 @@
 " Mislav's .vimrc
 " 
-" Thank you evil.che.lu (http://evilchelu.googlecode.com/svn/dotfiles/vim/.vimrc)
+" Thank you evil.che.lu (http://github.com/evilchelu/dotfiles/tree/master/dotted/vimrc)
 
 set nocompatible		         " the past is better left in the past
 set encoding=utf-8 nobomb    " BOM often causes trouble
