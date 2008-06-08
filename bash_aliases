@@ -61,7 +61,7 @@ function cdgem {
 }
 function gemdoc {
   GEMDIR=`gem env gemdir`/doc
-  gnome-open $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`/rdoc/index.html
+  open $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`/rdoc/index.html
 }
 
 alias qri='qri -w 106'

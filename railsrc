@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-# log to
 def l(stream = STDOUT)
   ActiveRecord::Base.logger = Logger.new(stream)
   ActiveRecord::Base.clear_active_connections!

@@ -10,7 +10,7 @@
 	status = auto
 	branch = auto
 [core]
-	excludesfile = /home/mislav/.gitignore
-  editor = vim -c 'set ft=diff'
+	excludesfile = /Users/mislav/.gitignore
+	editor = mate -w
 [mirror]
 	summary = true

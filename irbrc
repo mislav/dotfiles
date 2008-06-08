@@ -7,11 +7,11 @@ require 'rubygems'
 # students.map_by_first_name
 # require 'map_by_method'
 # 6.to_article
-#require 'to_activerecord' # warnings with Rails 2.0.2
+# require 'to_activerecord' # warnings with Rails 2.0.2
 # 'foo'.what?('FOO')
-require 'what_methods'
+# require 'what_methods'
 # User.find(:all).map &its.contacts.map(&its.last_name.capitalize)
-require 'methodphitamine'
+# require 'methodphitamine'
 
 load File.dirname(__FILE__) + '/.railsrc' if $0 == 'irb' && ENV['RAILS_ENV']
 
