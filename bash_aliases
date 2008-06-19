@@ -63,9 +63,13 @@ function gemdoc {
   GEMDIR=`gem env gemdir`/doc
   open $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`/rdoc/index.html
 }
+function mategem {
+  GEMDIR=`gem env gemdir`/gems
+  mate $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`
+}
 
-alias qri='qri -w 106'
-alias fri='fri -w 106'
+alias qri='qri -w 98'
+alias fri='fri -w 98'
 
 #########
 # RAILS #
