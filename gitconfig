@@ -5,6 +5,7 @@
 	whitespace = nowarn
 [alias]
 	co = checkout
+	put = push origin HEAD
 [color]
 	diff = auto
 	status = auto
