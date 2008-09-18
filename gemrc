@@ -1,6 +1,5 @@
 --- 
 :verbose: true
-gemhome: /Users/mislav/.gems
 gem: --no-ri --no-rdoc
 :update_sources: true
 :sources: 

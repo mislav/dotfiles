@@ -2,8 +2,7 @@ export MAGICK_HOME=/usr/local/ImageMagick
 export DYLD_LIBRARY_PATH=$MAGICK_HOME/lib
 export PATH=$MAGICK_HOME/bin:$PATH
 
-export GEM_HOME=/Users/mislav/.gems
-export PATH=$GEM_HOME/bin:$PATH
+export PATH=/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/:$PATH
 export PATH=/usr/local/git/bin:$PATH
 export PATH=/usr/local/mysql/bin:$PATH
 export PATH=~/bin:$PATH
@@ -14,5 +13,5 @@ if [ -f ~/.bashrc ]; then
     . ~/.bashrc
 fi
 
-export CLICOLOR="1"
-export LSCOLORS="ExFxCxDxBxegedabagacad"
+setenv CLICOLOR "1"
+setenv LSCOLORS "ExFxCxDxBxegedabagacad"
