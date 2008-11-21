@@ -4,4 +4,4 @@
 .DS_Store
 *.tmproj
 *.zip
-*.fla
+.com.apple.*
