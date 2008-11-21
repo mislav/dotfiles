@@ -180,6 +180,8 @@ onoremap <C-F4> <C-C><C-W>c
 let g:twitterusername='mislav'
 let g:twitterpassword=''
 
+let g:gist_clip_command = 'pbcopy'
+
 map <unique> <Leader>tp <Esc>:let g:twitterpassword=inputsecret('password? ')<CR>
 map <unique> <Leader>tw <Esc>:execute 'TwitterStatusUpdate ' . inputdialog('Enter a Twitter status message:')<CR>
 map <unique> <Leader>tf <Esc>:TwitterFriendsTimeline<CR>
