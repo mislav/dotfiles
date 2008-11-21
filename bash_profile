@@ -1,13 +1,8 @@
-export MAGICK_HOME=/usr/local/ImageMagick
-export DYLD_LIBRARY_PATH=$MAGICK_HOME/lib
-export PATH=$MAGICK_HOME/bin:$PATH
-
-export PATH=/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/:$PATH
-export PATH=/usr/local/git/bin:$PATH
-export PATH=/usr/local/mysql/bin:$PATH
 export PATH=~/bin:$PATH
 
-export MANPATH=/usr/local/git/man:$MANPATH
+export PATH=$PATH:/opt/local/bin
+export MANPATH=$MANPATH:/opt/local/share/man
+export INFOPATH=$INFOPATH:/opt/local/share/info
 
 if [ -f ~/.bashrc ]; then
     . ~/.bashrc
