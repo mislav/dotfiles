@@ -6,6 +6,7 @@
 [alias]
 	co = checkout
 	put = push origin HEAD
+	track = !git-track
 [color]
 	diff = auto
 	status = auto
