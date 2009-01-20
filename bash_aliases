@@ -80,10 +80,11 @@ alias sst='kill `cat tmp/pids/mongrel.pid`' # stop daemonized Mongrel
 alias a='autotest -rails'
 
 function sr() {
-  echo "Restarting Rails application ..."
   if [ -f tmp/pids/mongrel.pid ]; then
+    echo "Restarting Mongrel ..."
     kill -USR2 `cat tmp/pids/mongrel.pid`
   else
+    echo "Restarting Passenger instances ..."
     touch tmp/restart.txt
   fi
 }
@@ -123,3 +124,5 @@ function setenv () {
 }
 
 ########
+
+alias flashlog='tail -f ~/Library/Preferences/Macromedia/Flash\ Player/Logs/flashlog.txt'
