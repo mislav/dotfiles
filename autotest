@@ -9,10 +9,10 @@ module Autotest::Growl
     system cmd
   end
 
-  Autotest.add_hook :initialize do |at|
-    growl "autotest running", "Started"
-    false
-  end
+  # Autotest.add_hook :initialize do |at|
+  #   growl "autotest running", "Started"
+  #   false
+  # end
 
   Autotest.add_hook :red do |at|
     growl "Tests Failed", "#{at.files_to_test.size} tests failed", 2
