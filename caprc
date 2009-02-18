@@ -1,0 +1,5 @@
+begin
+  require 'capistrano_colors'
+rescue LoadError
+  # no colors for you
+end
