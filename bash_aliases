@@ -76,13 +76,26 @@ alias fri='fri -w 98'
 #########
 alias sc='script/console'
 alias ss='script/server' # start up the beast; use "ss -d" to detach
-alias sst='kill `cat tmp/pids/mongrel.pid`' # stop daemonized Mongrel
-alias a='autotest -rails'
 
+# stop daemonized Rails server
+function sst() {
+  if [ -f tmp/pids/mongrel.pid ]; then
+    echo "Stopping Mongrel ..."
+    kill `cat tmp/pids/mongrel.pid`
+  elif [ -f tmp/pids/server.pid ]; then
+    echo "Stopping server ..."
+    kill `cat tmp/pids/server.pid`
+  fi
+}
+
+# restart Rails application
 function sr() {
   if [ -f tmp/pids/mongrel.pid ]; then
     echo "Restarting Mongrel ..."
     kill -USR2 `cat tmp/pids/mongrel.pid`
+  elif [ -f tmp/pids/server.pid ]; then
+    echo "Restarting server ..."
+    kill -USR2 `cat tmp/pids/server.pid`
   else
     echo "Restarting Passenger instances ..."
     touch tmp/restart.txt
