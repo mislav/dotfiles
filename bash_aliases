@@ -104,7 +104,7 @@ function sr() {
 
 # see http://railstips.org/2007/5/31/even-edgier-than-edge-rails
 function edgie() { 
-  ruby ~/Projects/Rails/rails/railties/bin/rails $1 && cd $1 && ln -s ~/Projects/Rails/rails vendor/rails
+  ruby ~/.coral/rails/rails/railties/bin/rails $1 && cd $1 && ln -s ~/.coral/rails/rails vendor/rails
 }
 
 ########
