@@ -8,6 +8,7 @@
 	put = push origin HEAD
 	track = !git-track
 	thanks = !git-thanks
+	workdir = !git-new-workdir
 	up = !git pull --rebase && git push
 	ignored = "!git ls-files --others --exclude-standard"
 	nb = checkout -b
