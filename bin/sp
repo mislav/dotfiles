@@ -29,7 +29,7 @@ class ProjectSearch
         [scope]
     end
 
-    exts = %w(rb rjs rhtml rxml erb builder css js html).join(',')
+    exts = %w(rb rjs rhtml rxml erb builder css js html haml sass).join(',')
     globs = paths.map { |path| File.join(path, "**", "*.{#{exts}}") }
 
     globs.each do |glob|
