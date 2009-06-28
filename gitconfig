@@ -14,6 +14,10 @@
 	nb = checkout -b
 	pending = !git --no-pager log origin/master..master && echo
 	db = !sh -c 'git branch -D "$0" && git push origin ":$0"' &> /dev/null
+	missing = !sh -c 'git cherry "$0" | cut -sd + -f 2 | xargs "git show"'
+  lc = log ORIG_HEAD.. --stat --no-merges
+  conflicts = !git ls-files --unmerged | cut -c51- | sort -u | xargs $EDITOR
+  resolve = !git ls-files --unmerged | cut -c51- | sort -u | xargs git add
 [format]
   # pretty = format:"%Cblue%ar%Creset\t%s"
 [color]
@@ -27,3 +31,5 @@
 	summary = true
 [branch]
 	autosetupmerge = true
+[push]
+	default = tracking
