@@ -1,0 +1,11 @@
+--type-add
+ruby=.haml,.builder
+--type-add
+css=.sass
+--type-set
+markdown=.markdown,.md,.mdown
+--ruby
+--css
+--js
+--markdown
+--ignore-dir=.idea
