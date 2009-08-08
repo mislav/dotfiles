@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+authors = Hash.new(0)
+# extracts SVN authors from the log given on STDIN
+authors[$1] += 1 if $_ =~ /^r\d+ \| (\S+)/ while gets
+
+authors.to_a.
+  # sort descending by number of commits
+  sort_by { |item| -item.last }.
+  each do |item|
+    puts "#{item.first} (#{item.last})"
+  end
