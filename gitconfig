@@ -16,9 +16,12 @@
 	db = !sh -c 'git branch -D "$0" && git push origin ":$0"' &> /dev/null
 	missing = !sh -c 'git cherry "$0" | cut -sd + -f 2 | xargs "git show"'
 	lc = log ORIG_HEAD.. --stat --no-merges
+	lol = log --pretty=oneline --abbrev-commit --graph --decorate
 	conflicts = !git ls-files --unmerged | cut -c51- | sort -u | xargs $EDITOR
 	resolve = !git ls-files --unmerged | cut -c51- | sort -u | xargs git add
+	unstage = reset HEAD
 	subadd = !sh -c 'git submodule add $(git config -f"$0".git/config remote.origin.url) "$0"'
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
 [format]
 	# pretty = format:"%Cblue%ar%Creset\t%s"
 [color]
