@@ -1,8 +1,15 @@
-#!/bin/sh
-branch=$(git branch 2>/dev/null | grep ^\*)
-[ x$1 != x ] && tracking=$1 || tracking=${branch/* /}
+#!/usr/bin/env ruby -w
+current_branch = File.read('.git/HEAD').chomp.split(' refs/heads/').last
+track = ARGV.first
 
-git config branch.$tracking.remote origin 
-git config branch.$tracking.merge refs/heads/$tracking
+if track and track.index('/')
+  remote, branch = track.split('/', 2)
+else
+  remote = track || 'origin'
+  branch = current_branch
+end
+    
+system %(git config branch.#{current_branch}.remote #{remote})
+system %(git config branch.#{current_branch}.merge refs/heads/#{branch})
 
-echo "tracking origin/$tracking"
+puts "tracking #{remote}/#{branch}"
