@@ -4,8 +4,11 @@ ruby=.haml,.builder
 css=.sass
 --type-set
 markdown=.markdown,.md,.mdown
+--type-set
+actionscript=.as
 --ruby
 --css
 --js
 --markdown
+--actionscript
 --ignore-dir=.idea
