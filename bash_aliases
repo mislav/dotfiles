@@ -50,9 +50,6 @@ alias svnaddall='svn status | grep "^\?" | awk "{print \$2}" | xargs svn add' # 
 ########
 # RUBY #
 ########
-# use readline, completion and require rubygems by default for irb
-alias irb='irb --simple-prompt -r irb/completion -rubygems'
-
 # really awesome function, use: cdgem <gem name>, cd's into your gems directory
 # and opens gem that best matches the gem name provided
 function cdgem {

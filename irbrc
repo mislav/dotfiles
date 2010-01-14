@@ -1,8 +1,8 @@
-#!/usr/bin/ruby
+# http://linux.die.net/man/1/irb
 require 'irb/completion'
 # IRB.conf[:AUTO_INDENT] = true
+IRB.conf[:PROMPT_MODE] = :SIMPLE
 require 'pp'
-require 'rubygems'
 
 load File.dirname(__FILE__) + '/.railsrc' if $0 == 'irb' && ENV['RAILS_ENV']
 
