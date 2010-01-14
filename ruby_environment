@@ -1,5 +1,0 @@
-#!/bin/sh
-# global environment for Ruby, shared between shell and Passenger
-export MAGICK_HOME=/usr/local/ImageMagick
-export DYLD_LIBRARY_PATH=$MAGICK_HOME/lib
-export PATH=$MAGICK_HOME/bin:$PATH

@@ -1,3 +1,0 @@
-#!/bin/bash
-. /Users/mislav/.ruby_environment
-/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby $*
