@@ -71,8 +71,28 @@ alias fri='fri -w 98'
 #########
 # RAILS #
 #########
-alias sc='script/console'
-alias ss='script/server' # start up the beast; use "ss -d" to detach
+
+# console
+function sc() {
+  if [ -x script/rails ]; then
+    script/rails console
+  elif [ -x script/console ]; then
+    script/console
+  else
+    echo "no script/rails or script/console found" >&2
+  fi
+}
+
+# server
+function ss() {
+  if [ -x script/rails ]; then
+    script/rails server
+  elif [ -x script/server ]; then
+    script/server
+  else
+    echo "no script/rails or script/server found" >&2
+  fi
+}
 
 # stop daemonized Rails server
 function sst() {
