@@ -25,14 +25,12 @@ command = ARGV
 
 def run(*cmd)
   $stderr.puts "Running '#{cmd.join(' ')}' instead"
-  system(*cmd)
-end
-
-def echo(message)
-  $stderr.puts("\n" + message)
+  exec(*cmd)
 end
 
 case command.join(' ')
+when /^\w+=/
+  # bash variable assignment; ignore it
 when /^git(@|:\/\/).*\.git$/
   # Clone any full git repo URL.
   # @example
@@ -43,49 +41,17 @@ when /^git(@|:\/\/).*\.git$/
   
   run("git", "clone", command)
   
-when /^(.*) (.*)\.git$/
-  # Clone a user and project from GitHub.
-  # Does the right thing when cloning your own projects.
-  #
-  # @example
-  #   bjeanes dot-files.git
-  git_project_user      = $1
-  git_project_name      = $2
-  destination_directory = ""
-  git_url               = ""
-  
-  if git_project_user == ENV['USER']
-    destination_directory = git_project_name
-    git_url = "git@github.com:#{git_project_user}/#{git_project_name}.git"
-  else
-    destination_directory = [git_project_user, git_project_name].join('-')
-    git_url = "git://github.com/#{git_project_user}/#{git_project_name}.git"
-  end
-  # TODO: Would be nice to cd to the project directory afterwards
-  run "git", "clone", git_url, destination_directory
-  echo "Cloned as \'#{destination_directory}\'"
-  
 when /^(?:ftp|https?):\/\/.+\.t(?:ar\.)?gz$/
   # Download and unzip a URL
-  run "curl #{command} | tar xzv"
-  
-when /^[a-z0-9_\-\/]+\.feature$/
-  run "cucumber", command
+  run "wget #{command.first} -O- | tar xzv"
   
 when /^[A-Za-z0-9_\-\/]+\.gem$/
   # Install a gem
   # @example
   #   haml.gem
-  gem_to_install = command.first.gsub(/\.gem$/, '')
-  run "sudo", "gem", "install", gem_to_install
+  name = command.first.gsub(/\.gem$/, '')
+  run "gem", "install", name
   
 else
   abort "Error: No matching action defined in #{__FILE__.inspect}"
 end
-
-# Other Ideas:
-# * Open URL in browser
-# * cd to a path
-# * Run a spec by name
-# * Run a rake task by name
-

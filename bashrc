@@ -56,4 +56,4 @@ if [ -f $git_completion ]; then
 fi
 
 # Method missing for bash. Add to your .bashrc
-trap 'if ! type -t $BASH_COMMAND >/dev/null; then ~/bin/shell_method_missing $BASH_COMMAND; fi' DEBUG
+trap 'if ! type -t $BASH_COMMAND >/dev/null; then ~/bin/shell-method-missing $BASH_COMMAND; fi' DEBUG
