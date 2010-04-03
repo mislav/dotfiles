@@ -1,0 +1,29 @@
+# INSTALLATION: Copy to ~/.inputrc
+
+# from http://www.pixelbeat.org/settings/.inputrc
+
+
+# By default up/down are bound to previous-history
+# and next-history respectively. The following does the
+# same but gives the extra functionality where if you
+# type any text (or more accurately, if there is any text
+# between the start of the line and the cursor),
+# the subset of the history starting with that text
+# is searched (like 4dos for e.g.).
+# Note to get rid of a line just Ctrl-C
+#
+"\e[B": history-search-forward
+"\e[A": history-search-backward
+
+$if Bash
+  # F10 toggles mc on and off
+  # Note Ctrl-o toggles panes on and off in mc
+  "\e[21~": "mc\C-M"
+
+  #do history expansion when space entered
+  Space: magic-space
+$endif
+
+# Include system wide settings which are ignored
+# by default if one has their own .inputrc
+$include /etc/inputrc
