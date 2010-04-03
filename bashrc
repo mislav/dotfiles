@@ -54,3 +54,6 @@ git_completion='/usr/local/git/contrib/completion/git-completion.bash'
 if [ -f $git_completion ]; then
   source $git_completion
 fi
+
+# Method missing for bash. Add to your .bashrc
+trap 'if ! type -t $BASH_COMMAND >/dev/null; then ~/bin/shell_method_missing $BASH_COMMAND; fi' DEBUG
