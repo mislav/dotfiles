@@ -6,11 +6,11 @@ require 'pp'
 
 load File.dirname(__FILE__) + '/.railsrc' if $0 == 'irb' && ENV['RAILS_ENV']
 
-def time(times = 1)
-  ret = nil
-  Benchmark.bm { |x| x.report { times.times { ret = yield } } }
-  ret
-end
+# def time(times = 1)
+#   ret = nil
+#   Benchmark.bm { |x| x.report { times.times { ret = yield } } }
+#   ret
+# end
 
 def copy(data)
   File.popen('pbcopy', 'w') { |p| p << data.to_s }
