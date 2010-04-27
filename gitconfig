@@ -35,5 +35,6 @@
 	summary = true
 [branch]
 	autosetupmerge = true
+	autosetuprebase = always
 [push]
 	default = tracking
