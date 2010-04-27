@@ -11,4 +11,5 @@ actionscript=.as
 --js
 --markdown
 --actionscript
+--objc
 --ignore-dir=.idea
