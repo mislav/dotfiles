@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby -w
+## See how specific formulas changed in the last `brew update`.
+#
+# Example:
+#
+#   $ brew-log git mongodb node redis hub
+
+if ARGV.empty?
+  puts "Usage: #{File.basename $0} <names>"
+  exit(2)
+else
+  dir = `brew --prefix`.chomp
+  args = ["--pretty=%s  %Cblue(%cr)%Creset %Cred%h%Creset", 'ORIG_HEAD..', '--']
+  args.concat ARGV.map { |name| "Library/Formula/#{name}.rb" }
+
+  exec 'git', "--git-dir=#{dir}/.git", 'log', *args
+end
