@@ -3,15 +3,23 @@
 #
 # Example:
 #
+#   $ brew update
 #   $ brew-log git mongodb node redis hub
+#   $ brew-log --diff hub
 
 if ARGV.empty?
   puts "Usage: #{File.basename $0} <names>"
   exit(2)
 else
   dir = `brew --prefix`.chomp
-  args = ["--pretty=%s  %Cblue(%cr)%Creset %Cred%h%Creset", 'ORIG_HEAD..', '--']
+
+  if ARGV.delete '--diff'
+    args = ['diff']
+  else
+    args = ['log', "--pretty=%s  %Cblue(%cr)%Creset %Cred%h%Creset"]
+  end
+  args << 'ORIG_HEAD..' << '--'
   args.concat ARGV.map { |name| "Library/Formula/#{name}.rb" }
 
-  exec 'git', "--git-dir=#{dir}/.git", 'log', *args
+  exec 'git', "--git-dir=#{dir}/.git", *args
 end
