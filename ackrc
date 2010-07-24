@@ -6,6 +6,8 @@ css=.sass
 markdown=.markdown,.md,.mdown
 --type-set
 actionscript=.as
+--type-set
+cucumber=.feature
 --ruby
 --css
 --js
