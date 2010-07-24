@@ -49,7 +49,7 @@ if [ -f ~/bin/sake-completion ]; then
   complete -C ~/bin/sake-completion -o default sake
 fi
 
-git_completion='/usr/local/git/contrib/completion/git-completion.bash'
+git_completion='/opt/local/etc/bash_completion.d/git-completion.bash'
 
 if [ -f $git_completion ]; then
   source $git_completion
