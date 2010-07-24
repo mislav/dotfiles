@@ -1,6 +1,0 @@
-## WARNING: capistrano colors seem to break some functionality
-# begin
-#   require 'capistrano_colors'
-# rescue LoadError
-#   # no colors for you
-# end
