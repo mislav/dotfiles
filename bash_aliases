@@ -31,15 +31,6 @@ function gco {
   fi
 }
 
-#######
-# SVN #
-#######
-alias sup='svn up' # trust me 3 chars makes a different
-# alias sstu='svn st -u' # remote repository changes
-# alias scom='svn commit' # commit
-alias svnclear='find . -name .svn -print0 | xargs -0 rm -rf' # removes all .svn folders from directory recursively
-alias svnaddall='svn status | grep "^\?" | awk "{print \$2}" | xargs svn add' # adds all unadded files
-
 ########
 # RUBY #
 ########
@@ -57,9 +48,6 @@ function mategem {
   GEMDIR=`gem env gemdir`/gems
   mate $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`
 }
-
-alias qri='qri -w 98'
-alias fri='fri -w 98'
 
 #########
 # RAILS #
@@ -112,24 +100,10 @@ function sr() {
   fi
 }
 
-# see http://railstips.org/2007/5/31/even-edgier-than-edge-rails
-function edgie() { 
-  ruby ~/.coral/rails/rails/railties/bin/rails $1 && cd $1 && ln -s ~/.coral/rails/rails vendor/rails
-}
-
 ########
 # misc #
 ########
 
-alias texclean='rm -f *.toc *.aux *.log *.cp *.fn *.tp *.vr *.pg *.ky'
-alias clean='echo -n "Really clean this directory?";
-	read yorn;
-	if test "$yorn" = "y"; then
-	   rm -f \#* *~ .*~ *.bak .*.bak  *.tmp .*.tmp core a.out;
-	   echo "Cleaned.";
-	else
-	   echo "Not cleaned.";
-	fi'
 alias h='history'
 alias j="jobs -l"
 alias l="ls -lah"
@@ -150,7 +124,3 @@ alias unsetenv=unset
 function setenv () {
   export $1="$2"
 }
-
-########
-
-alias flashlog='tail -f ~/Library/Preferences/Macromedia/Flash\ Player/Logs/flashlog.txt'
