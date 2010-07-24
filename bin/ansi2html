@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby -wKU
+
+# Converts ANSI escape sequences for terminal colors to HTML.
+# Synopsis:
+#   ansi2html [-w] [--css]
+# 
+# Options:
+#   -w    : wraps the output in PRE tags 
+#   -css  : includes CSS style declaration
+# 
+# Try it out:
+#   $ ruby -e '30.upto(37) {|n| puts "\e[#{n}mHi \e[1;#{n}mho\e[m" }' | ansi2html
+#
+# Caveat: most commands are designed to *not* output color when
+# they detect they're not directed to a terminal. You will have
+# to force color otput my any means available. Example:
+#
+#   $ git log --oneline --decorate --color | ansi2html
+
+require 'cgi'
+
+wrap = ARGV.delete('-w')
+css = ARGV.delete('--css')
+data = ARGF.read
+
+COLORS = [
+  %w[black black #818383],
+  %w[red #BA3521 #F9391F],
+  %w[green #25BC22 #31E722],
+  %w[yellow #ADAD27 #EAEC23],
+  %w[blue #3D2EE2 #562FE2],
+  %w[magenta #AE38D4 #F935F7],
+  %w[cyan #2BB9C9 #14F0F0],
+  %w[white #DEDFE1 #E9EBEB],
+]
+
+def classnames(code)
+  codes = code.split(';').map { |c| c.to_i }
+  if color_code = codes.find { |c| c.between?(30, 37) }
+    codes.delete(color_code)
+    codes << COLORS[color_code - 30][0]
+  end
+  codes << 'bright' if codes.delete(1)
+  codes.map { |c| ".ansi-#{c}" }.join('')
+end
+
+open = false
+
+# replace escape sequences with SPAN tags
+out = CGI.escapeHTML(data).gsub(/\e\[ ([\d;]*)m /x) {
+  opentag = $1.empty?? nil : "<span class='#{classnames($1)}'>"
+  closetag = open ? '</span>' : nil
+  open = !!opentag
+  "#{closetag}#{opentag}"
+}
+
+# optional: wrap HTML in PRE tags
+out = "<pre class='ansi'>#{out}</pre>" if wrap
+
+# optional: append CSS styles to output
+if css
+  rules = COLORS.map { |name, normal, bright|
+    [ "pre.ansi .ansi-#{name} { color: #{normal}; }",
+      "pre.ansi .ansi-#{name}.ansi-bright { color: #{bright}; }" ]
+  }.flatten
+  
+  out = <<-CSS
+#{out}
+
+<style type="text/css">
+  pre.ansi { color: #DEDFE1; background-color: #010101; }
+  #{rules.join("\n  ")}
+</style>
+CSS
+end
+
+puts out
