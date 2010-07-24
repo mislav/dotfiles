@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
+## Convert Windows to Unix line breaks
+#
+# Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
+
 ARGV.each do |file|
   next unless file =~ /\.\w{2,4}$/
   text = File.read(file)

@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby -w
 ## See how specific formulas changed in the last `brew update`.
 #
+# Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
+#
 # Example:
 #
 #   $ brew update

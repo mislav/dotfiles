@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
+# Extracts authors from the SVN log given on STDIN
+#
+# Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
+
 authors = Hash.new(0)
-# extracts SVN authors from the log given on STDIN
 authors[$1] += 1 if $_ =~ /^r\d+ \| (\S+)/ while gets
 
 authors.to_a.

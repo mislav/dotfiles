@@ -8,6 +8,8 @@
 #   -w    : wraps the output in PRE tags 
 #   -css  : includes CSS style declaration
 # 
+# Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
+# 
 # Try it out:
 #   $ ruby -e '30.upto(37) {|n| puts "\e[#{n}mHi \e[1;#{n}mho\e[m" }' | ansi2html
 #
