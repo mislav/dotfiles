@@ -39,7 +39,7 @@ def classnames(code)
     codes << COLORS[color_code - 30][0]
   end
   codes << 'bright' if codes.delete(1)
-  codes.map { |c| ".ansi-#{c}" }.join('')
+  codes.map { |c| "ansi-#{c}" }.join(' ')
 end
 
 open = false
