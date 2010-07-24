@@ -21,20 +21,13 @@ alias gd='git diff'
 alias gc='git commit -v'
 alias gca='git commit -v -a'
 alias gb='git branch -v'
+alias st='git status -sb'
 
 function gco {
   if [ -z "$1" ]; then
     git checkout master
   else
     git checkout $1
-  fi
-}
-
-function st {
-  if [ -d ".svn" ]; then
-    svn status
-  else
-    git status
   fi
 }
 
