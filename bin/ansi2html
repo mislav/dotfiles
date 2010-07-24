@@ -1,24 +1,20 @@
 #!/usr/bin/env ruby -wKU
-
-# Converts ANSI escape sequences for terminal colors to HTML.
+## Converts ANSI escape sequences for terminal colors to HTML.
 # Synopsis:
 #   ansi2html [-w] [--css]
 # 
 # Options:
 #   -w    : wraps the output in PRE tags 
 #   -css  : includes CSS style declaration
+#
+# Example:
+#   $ git log --oneline --decorate -10 --color | ansi2html
 # 
 # Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
 # 
 # Try it out:
 #   $ ruby -e '30.upto(37) {|n| puts "\e[#{n}mHi \e[1;#{n}mho\e[m" }' | ansi2html
 #
-# Caveat: most commands are designed to *not* output color when
-# they detect they're not directed to a terminal. You will have
-# to force color otput my any means available. Example:
-#
-#   $ git log --oneline --decorate --color | ansi2html
-
 require 'cgi'
 
 wrap = ARGV.delete('-w')
