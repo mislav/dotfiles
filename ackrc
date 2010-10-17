@@ -8,6 +8,8 @@ markdown=.markdown,.md,.mdown
 actionscript=.as
 --type-set
 cucumber=.feature
+--type-set
+rdoc=.rdoc
 --ruby
 --css
 --js
