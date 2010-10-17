@@ -1,5 +1,4 @@
-#!/usr/bin/env ruby
-require "rubygems"
+#!/usr/bin/env ruby -rubygems
 require "mutter"
 require "httparty"
 
@@ -31,12 +30,19 @@ class Issue
     end
   end
   
+  def self.reopen(*ids)
+    ids.each do |id|
+      post("/reopen/#{REPO}/#{id}")
+      puts "Issue #{id} reopened."
+    end
+  end
+  
   def self.view(id)
-    system "open https://github.com/#{REPO}/issues/#issue/#{id}"
+    system "open http://github.com/#{REPO}/issues/#{id}"
   end
   
   def self.browse
-    system "open https://github.com/#{REPO}/issues"
+    system "open http://github.com/#{REPO}/issues"
   end
   
   def self.list(status="open")
@@ -64,8 +70,12 @@ when nil, "list"
   Issue.list
 when "close", "c"
   Issue.close *ARGV
+when "reopen"
+  Issue.reopen *ARGV
 when "browse", "b"
   Issue.browse
+when "view", "v"
+  Issue.view ARGV.first
 when "help", "-h", "--help"
   abort <<-EOS
 GitHub Issues power script
