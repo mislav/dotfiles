@@ -31,6 +31,12 @@ function gco {
   fi
 }
 
+function superblame {
+  git log --format=%h --author=$1 $2 | \
+    xargs -L1 -ISHA git diff --shortstat 'SHA^..SHA' app config/environment* config/initializers/ public/stylesheets/ | \
+    ruby -e 'n=Hash.new(0); while gets; i=0; puts $_.gsub(/\d+/){ n[i+=1] += $&.to_i }; end' | tail -n1
+}
+
 ########
 # RUBY #
 ########
