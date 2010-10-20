@@ -1,0 +1,72 @@
+#!/usr/bin/env macruby -wKU
+# alpha stuff
+# TODO: Address Book integration, more output formats
+
+framework 'Foundation'
+framework 'AppKit' # for decoding classes such as NSMutableParagraphStyle
+
+# based on Logorrhea from Spiny Software
+class InstantMessage
+  attr_reader :sender, :time, :text
+  
+  def initWithCoder(coder)
+    @coder = coder
+    
+    if @coder.allowsKeyedCoding
+  		@sender = @coder.decodeObjectForKey "Sender"
+  		@time = @coder.decodeObjectForKey "Time"
+  		@text = @coder.decodeObjectForKey "MessageText"
+      # flags = [decoder decodeInt32ForKey:@"Flags"];
+  	else
+  		@sender = @coder.decodeObject
+  		@time = @coder.decodeObject
+  		@text = @coder.decodeObject
+      # [decoder decodeValueOfObjCType:@encode(unsigned int) at:&flags];
+    end
+    
+    self
+  end
+end
+
+class Presentity
+  attr_reader :service, :sender_id
+  
+  def initWithCoder(coder)
+    @coder = coder
+    
+    if @coder.allowsKeyedCoding
+  		@service = @coder.decodeObjectForKey "ServiceName"
+  		@sender_id = @coder.decodeObjectForKey "ID"
+  	else
+  	  @service = @coder.decodeObject
+  		@sender_id = @coder.decodeObject
+    end
+    
+    self
+  end
+end
+
+class IChat
+  attr_reader :messages
+  
+  include Enumerable
+  
+  def initialize(filename)
+    log = NSData.alloc.initWithContentsOfMappedFile filename
+    data = NSKeyedUnarchiver.unarchiveObjectWithData log
+    @messages = data.detect { |obj| Array === obj }
+  end
+  
+  def each(&block)
+    messages.each(&block)
+  end
+end
+
+if $0 == __FILE__
+  # takes in a file, dumps chat in plaintext format
+  chat = IChat.new ARGV.first
+  chat.map do |msg|
+    puts "[#{msg.sender.sender_id}]: #{msg.text.string}"
+    puts
+  end
+end
