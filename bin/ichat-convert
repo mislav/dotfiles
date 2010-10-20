@@ -13,14 +13,14 @@ class InstantMessage
     @coder = coder
     
     if @coder.allowsKeyedCoding
-  		@sender = @coder.decodeObjectForKey "Sender"
-  		@time = @coder.decodeObjectForKey "Time"
-  		@text = @coder.decodeObjectForKey "MessageText"
+      @sender = @coder.decodeObjectForKey "Sender"
+      @time = @coder.decodeObjectForKey "Time"
+      @text = @coder.decodeObjectForKey "MessageText"
       # flags = [decoder decodeInt32ForKey:@"Flags"];
-  	else
-  		@sender = @coder.decodeObject
-  		@time = @coder.decodeObject
-  		@text = @coder.decodeObject
+    else
+      @sender = @coder.decodeObject
+      @time = @coder.decodeObject
+      @text = @coder.decodeObject
       # [decoder decodeValueOfObjCType:@encode(unsigned int) at:&flags];
     end
     
@@ -35,11 +35,11 @@ class Presentity
     @coder = coder
     
     if @coder.allowsKeyedCoding
-  		@service = @coder.decodeObjectForKey "ServiceName"
-  		@sender_id = @coder.decodeObjectForKey "ID"
-  	else
-  	  @service = @coder.decodeObject
-  		@sender_id = @coder.decodeObject
+      @service = @coder.decodeObjectForKey "ServiceName"
+      @sender_id = @coder.decodeObjectForKey "ID"
+    else
+      @service = @coder.decodeObject
+      @sender_id = @coder.decodeObject
     end
     
     self
