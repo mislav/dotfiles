@@ -55,6 +55,19 @@ function mategem {
   mate $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`
 }
 
+function r19 {
+  switch-ruby $(brew --prefix)/Cellar/ruby/1.9.2-p0/bin
+}
+
+function r18 {
+  switch-ruby $(brew --prefix)/Cellar/ruby-enterprise-edition/2010.02/bin
+}
+
+function switch-ruby {
+  echo "using $1"
+  export PATH=$(ruby -e 'puts ENV["PATH"].split(":").map { |p| p =~ /\bruby\b/ ? ARGV[0] : p }.uniq.join(":")' $1)
+}
+
 #########
 # RAILS #
 #########
