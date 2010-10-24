@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -rubygems -wKU
 
 help = <<-MSG
-Usage: gorgeous [-i] [-F <in-format>] [-T <out-format>] [-o <destination>] FILE ...
+Usage: gorgeous [-i] [-F <in-format>] [-T <out-format>] [-q <query>] [-o <destination>] FILE ...
 
 This utility converts data between different formats.
 Formats are one of:  json, xml, yaml, ruby, email
@@ -12,6 +12,7 @@ Options:
   -i    Convert file in-place
   -F    Input format
   -T    Output format
+  -q    Query string selecting a single field to output
   -o    Write output to file instead of STDOUT
 MSG
 
@@ -33,8 +34,10 @@ options = help_usage.scan(/[^\w-](-[a-z])(?: <(.+?)>)?/i).inject({}) do |opts, (
 end
 
 in_place = options['-i']
+filter_field = options['-q']
+output_format = filter_field && :field
 input_format = options['-F'] && options['-F'].to_sym
-output_format = options['-T'] && options['-T'].to_sym
+output_format ||= options['-T'] && options['-T'].to_sym
 destination = options['-o']
 from_stdin = !$stdin.tty?
 
@@ -46,11 +49,15 @@ if from_stdin
 elsif in_place and destination
   warn "can't combine -i and -o flags"
   exit 1
+elsif filter_field and options['-T']
+  warn "can't combine -T and -q flags"
+  exit 1
 elsif ARGV.empty?
   warn help_usage
   exit 1
 end
 
+# clobber the input file
 destination = ARGV.first if in_place
 
 class Gorgeous
@@ -150,6 +157,10 @@ class Gorgeous
       YAML.load to_s
     when :email
       self.class.headers_from_mail to_mail
+    when :ruby
+      eval to_s
+    else
+      raise ArgumentError, "don't know how to decode #{format}"
     end
   end
   
@@ -179,7 +190,7 @@ end
 input = Gorgeous.new(ARGF, ARGV.first, input_format)
 
 unless input.format
-  warn "unrecognized input type"
+  warn "unrecognized input format; specify explicit format with `-F <format>`"
   exit 1
 end
 
@@ -211,6 +222,8 @@ elsif input_format == :email and output_format == :txt
   output = Gorgeous.convert_utf8(part.decode_body.strip, part.charset)
 elsif output_format == :xml
   output = Gorgeous.pretty_xml(input.to_xml)
+elsif output_format == :field
+  output = input.to_hash[filter_field]
 else
   warn "don't know how to convert #{input_format} to #{output_format}"
   exit 1
