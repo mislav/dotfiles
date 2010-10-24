@@ -1,13 +1,12 @@
 #!/usr/bin/env macruby -wKU
-# alpha stuff
-# TODO: Address Book integration, more output formats
 
 framework 'Foundation'
 framework 'AppKit' # for decoding classes such as NSMutableParagraphStyle
+framework 'AddressBook'
 
 # based on Logorrhea from Spiny Software
 class InstantMessage
-  attr_reader :sender, :time, :text
+  attr_reader :sender, :time, :text, :flags
   
   def initWithCoder(coder)
     @coder = coder
@@ -16,7 +15,7 @@ class InstantMessage
       @sender = @coder.decodeObjectForKey "Sender"
       @time = @coder.decodeObjectForKey "Time"
       @text = @coder.decodeObjectForKey "MessageText"
-      # flags = [decoder decodeInt32ForKey:@"Flags"];
+      @flags = @coder.decodeInt32ForKey "Flags"
     else
       @sender = @coder.decodeObject
       @time = @coder.decodeObject
@@ -44,6 +43,27 @@ class Presentity
     
     self
   end
+  
+  def self.person_mapper(&block)
+    if block_given?
+      @person_mapper = block
+    else
+      if @person_mapper.respond_to? :call
+        mapper = @person_mapper.call
+        @person_mapper = Hash.new { |h, id| h[id] = mapper[id] }
+      end
+      @person_mapper
+    end
+  end
+  
+  def person
+    self.class.person_mapper[sender_id]
+  end
+  
+  def ==(other)
+    raise ArgumentError unless self.class === other
+    self.service == other.service and self.sender_id == other.sender_id
+  end
 end
 
 class IChat
@@ -62,11 +82,84 @@ class IChat
   end
 end
 
+class ABAddressBook
+  def search_properties(props, for:value)
+    searches = props.map do |property|
+      prop_const = Object.const_get :"KAB#{property}Property"
+      if property.to_s == 'URLs' and value =~ %r{^-(\d+)@chat\.facebook\.com$}
+        facebook_id = "fb://profile/#{$1}"
+        ABPerson.searchElementForProperty(prop_const, label:nil, key:nil, value:facebook_id, comparison:KABEqual)
+      else
+        ABPerson.searchElementForProperty(prop_const, label:nil, key:nil, value:value, comparison:KABEqualCaseInsensitive)
+      end
+    end
+    
+    multi = ABSearchElement.searchElementForConjunction(KABSearchOr, children:searches)
+    self.recordsMatchingSearchElement multi
+  end
+  
+  def find_chat_buddy(id)
+    search_properties(%w[Email AIMInstant JabberInstant URLs], for:id).first
+  end
+end
+
+# adding a method to String for some reason doesn't work for all strings
+class NSString
+  def presence
+    empty? ? nil : self
+  end
+end unless ''.respond_to? :presence
+
+class NilClass
+  def presence() self end
+end unless nil.respond_to? :presence
+
+class ABPerson
+  def first_name
+    valueForProperty(KABFirstNameProperty).presence
+  end
+  
+  def last_name
+    valueForProperty(KABLastNameProperty).presence
+  end
+  
+  def nickname
+    valueForProperty(KABNicknameProperty).presence
+  end
+    
+  def to_s
+    [first_name, last_name].compact.join(' ')
+  end
+end
+
 if $0 == __FILE__
   # takes in a file, dumps chat in plaintext format
   chat = IChat.new ARGV.first
-  chat.map do |msg|
-    puts "[#{msg.sender.sender_id}]: #{msg.text.string}"
+  
+  Presentity.person_mapper do
+    ab = ABAddressBook.sharedAddressBook
+
+    lambda { |id|
+      buddy = ab.find_chat_buddy(id)
+      buddy ? (buddy.nickname || buddy.first_name) : id.split('@').first
+    }
+  end
+  
+  previous_msg = nil
+
+  chat.each do |msg|
+    next unless msg.sender
+    sender = msg.sender.person
+    text = msg.text.string
+    
+    if text.index('/me ') == 0
+      puts "(#{text.sub(/\/me\s+/, sender + ' ')})"
+    else
+      print "[#{sender}]  " if previous_msg.nil? or previous_msg.sender != msg.sender
+      puts text
+    end
     puts
+    
+    previous_msg = msg
   end
 end
