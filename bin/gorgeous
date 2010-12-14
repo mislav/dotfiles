@@ -18,6 +18,7 @@ Options:
 Query format:
   "/items/comments[1]/text"    --  2nd comment body of each item
   "/items[-1]/user/full_name"  --  name of user for last item
+  "//user/username"            --  usernames of all users anywhere in the document
 
 MSG
 
@@ -202,6 +203,7 @@ class Gorgeous
   
   def apply_query(obj)
     if filtered?
+      require 'active_support/core_ext/object/blank'
       query = @options[:query].dup
       while query.sub!(%r{(//?)(\w+)(?:\[(-?\d+)\])?}, '')
         obj = filter_resultset(obj, $2, $3, $1.length == 2)
@@ -213,9 +215,18 @@ class Gorgeous
   
   def filter_resultset(obj, key, idx = nil, deep = false)
     if Array === obj
-      obj.map { |o| filter_resultset(o, key, idx, deep) }.compact
-    elsif result = obj[key.to_s] || obj[key.to_sym]
-      result = result[idx.to_i] if idx
+      obj.map { |o| filter_resultset(o, key, idx, deep) }.flatten.compact.presence
+    elsif Hash === obj
+      if deep
+        result = obj.map do |k, value|
+          if k.to_s == key.to_s then value
+          else filter_resultset(value, key, nil, deep)
+          end
+        end.flatten.compact.presence
+      else
+        result = obj[key.to_s] || obj[key.to_sym]
+      end
+      result = result[idx.to_i] if result and idx
       result
     end
   end
