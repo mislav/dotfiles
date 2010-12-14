@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby -wKU
+all = !!ARGV.delete('-a')
+
+unless ENV['EDITOR']
+  warn "set the EDITOR environment variable with your text editor"
+  exit 1
+end
+
+finder = lambda { |file|
+  file += '.rb' if File.extname(file).empty?
+  $:.map { |p| File.join(p, file) }.find { |f| File.exists? f }
+}
+
+found = ARGV.map { |arg| finder[arg] }.compact
+found = Dir[*found.map { |path| path.sub(/\.rb$/, '*') }] if all
+
+if found.empty?
+  warn "nothing found, sry"
+  exit 1
+end
+
+exec ENV['EDITOR'], *Dir[*found]
