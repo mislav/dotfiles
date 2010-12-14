@@ -4,7 +4,7 @@ help = <<-MSG
 Usage: gorgeous [-i] [-F <in-format>] [-T <out-format>] [-q <query>] [-o <destination>] FILE ...
 
 This utility converts data between different formats.
-Formats are one of:  json, xml, yaml, ruby, email
+Formats are one of:  json, xml, yaml, ruby, email, url
 
 Input can be read from STDIN as well as files given on the command-line.
 
@@ -12,8 +12,13 @@ Options:
   -i    Convert file in-place
   -F    Input format
   -T    Output format
-  -q    Query string selecting a single field to output
+  -q    Query selector in format similar to XPath (see below)
   -o    Write output to file instead of STDOUT
+
+Query format:
+  "/items/comments[1]/text"    --  2nd comment body of each item
+  "/items[-1]/user/full_name"  --  name of user for last item
+
 MSG
 
 if ARGV.index('-h') or ARGV.index('--help')
@@ -34,8 +39,7 @@ options = help_usage.scan(/[^\w-](-[a-z])(?: <(.+?)>)?/i).inject({}) do |opts, (
 end
 
 in_place = options['-i']
-filter_field = options['-q']
-output_format = filter_field && :field
+query_path = options['-q']
 input_format = options['-F'] && options['-F'].to_sym
 output_format ||= options['-T'] && options['-T'].to_sym
 destination = options['-o']
@@ -48,9 +52,6 @@ if from_stdin
   end
 elsif in_place and destination
   warn "can't combine -i and -o flags"
-  exit 1
-elsif filter_field and options['-T']
-  warn "can't combine -T and -q flags"
   exit 1
 elsif ARGV.empty?
   warn help_usage
@@ -67,6 +68,7 @@ class Gorgeous
     when '.xml', '.html' then :xml
     when '.rb' then :ruby
     when '.yml', '.yaml' then :yaml
+    when '.mail', '.email' then :email
     end
   end
   
@@ -76,7 +78,7 @@ class Gorgeous
   end
   
   def self.convert_utf8(string, from_charset)
-    if from_charset.nil? or from_charset.downcase == 'utf-8'
+    if from_charset.nil? or from_charset.downcase.tr('-', '') == 'utf8'
       string
     else
       require 'iconv'
@@ -89,20 +91,23 @@ class Gorgeous
     require 'active_support/core_ext/object/blank'
 
     address_field = lambda { |name|
-      if field = email.header[name.to_s]
+      if field = email.header[name]
         values = field.addrs.map { |a|
-          encoding = a.raw.input =~ /=\?([\w-]+)/ && $1
-          Gorgeous.convert_utf8(a.decoded, encoding)
+          Mail::Encodings.unquote_and_convert_to(a.format, 'utf-8')
         }
         values.size < 2 ? values.first : values
       end
     }
     header_value = lambda { |name|
-      field = email.header[name.to_s] and field.value.to_s
+      field = email.header[name] and field.value.to_s
+    }
+    decoded_value = lambda { |name|
+      field = email.header[name]
+      Mail::Encodings.unquote_and_convert_to(field.value, 'utf-8') if field
     }
     
     data = ActiveSupport::OrderedHash.new
-    data[:subject] = email.subject
+    data[:subject] = decoded_value['subject']
     data[:from] = address_field['from']
     data[:to] = address_field['to']
     data[:cc] = address_field['cc']
@@ -115,7 +120,7 @@ class Gorgeous
     data[:references] = email.references
 
     data[:date] = email.date
-    data[:sender] = email.sender
+    data[:sender] = address_field['sender']
     data[:delivered_to] = header_value['delivered-to']
     data[:original_sender] = header_value['x-original-sender']
     data[:content_type] = email.content_type.to_s.split(';', 2).first.presence
@@ -124,10 +129,14 @@ class Gorgeous
     data.tap { |hash| hash.reject! { |k,v| v.nil? } }
   end
   
-  def initialize(input, filename = nil, format = nil)
+  def initialize(input, options = {})
     @input = input
-    @filename = filename
-    @format = format
+    @format = options[:format]
+    @options = options
+  end
+  
+  def filtered?
+    !!@options[:query]
   end
   
   def to_s
@@ -136,16 +145,17 @@ class Gorgeous
   
   def format
     @format ||= begin
-      if @filename
-        self.class.filename_to_format(@filename)
+      if @options[:filename]
+        self.class.filename_to_format(@options[:filename])
       else
         guess_format
       end
     end
   end
   
-  def to_hash
-    case format
+  # typically hash or array
+  def data
+    apply_query case format
     when :xml
       require 'active_support/core_ext/hash/conversions'
       Hash.from_xml(to_s)
@@ -158,7 +168,10 @@ class Gorgeous
     when :email
       self.class.headers_from_mail to_mail
     when :ruby
-      eval to_s
+      eval to_s # TODO: sandbox
+    when :url
+      require 'rack/utils'
+      Rack::Utils.parse_nested_query(to_s.strip)
     else
       raise ArgumentError, "don't know how to decode #{format}"
     end
@@ -183,11 +196,32 @@ class Gorgeous
     when /\A\s*[\[\{]/ then :json
     when /\A\s*</ then :xml
     when /\A---\s/ then :yaml
+    when /\A\S+=\S+\Z/ then :url
+    end
+  end
+  
+  def apply_query(obj)
+    if filtered?
+      query = @options[:query].dup
+      while query.sub!(%r{(//?)(\w+)(?:\[(-?\d+)\])?}, '')
+        obj = filter_resultset(obj, $2, $3, $1.length == 2)
+        break if obj.nil?
+      end
+    end
+    obj
+  end
+  
+  def filter_resultset(obj, key, idx = nil, deep = false)
+    if Array === obj
+      obj.map { |o| filter_resultset(o, key, idx, deep) }.compact
+    elsif result = obj[key.to_s] || obj[key.to_sym]
+      result = result[idx.to_i] if idx
+      result
     end
   end
 end
 
-input = Gorgeous.new(ARGF, ARGV.first, input_format)
+input = Gorgeous.new(ARGF, :filename => ARGV.first, :format => input_format, :query => query_path)
 
 unless input.format
   warn "unrecognized input format; specify explicit format with `-F <format>`"
@@ -202,13 +236,13 @@ end
 
 if output_format == :ruby
   require 'pp'
-  output = input.to_hash.pretty_inspect
+  output = input.data.pretty_inspect
 elsif output_format == :json
   require 'yajl/json_gem'
-  output = JSON.pretty_generate input.to_hash
+  output = JSON.pretty_generate input.data
 elsif output_format == :yaml
   require 'yaml'
-  output = YAML.dump input.to_hash
+  output = YAML.dump input.data
 elsif input_format == :email and output_format == :xml
   require 'nokogiri'
   email = input.to_mail
@@ -216,14 +250,18 @@ elsif input_format == :email and output_format == :xml
   html = Gorgeous.convert_utf8(part.decode_body, part.charset)
   ugly = Nokogiri::HTML html
   output = Gorgeous.pretty_xml(ugly)
-elsif input_format == :email and output_format == :txt
+elsif input_format == :email and output_format == :txt and not input.filtered?
   email = input.to_mail
   part = email.text_part
   output = Gorgeous.convert_utf8(part.decode_body.strip, part.charset)
 elsif output_format == :xml
   output = Gorgeous.pretty_xml(input.to_xml)
-elsif output_format == :field
-  output = input.to_hash[filter_field]
+elsif output_format == :url
+  require 'rack/utils'
+  output = Rack::Utils.build_nested_query(input.data)
+elsif output_format == :txt
+  data = input.data
+  output = Array === data ? data.join("\n") : data.to_s
 else
   warn "don't know how to convert #{input_format} to #{output_format}"
   exit 1
@@ -237,7 +275,11 @@ if destination
     exit 1
   end
 else
-  puts output
+  begin
+    puts output
+  rescue Errno::EPIPE
+    # ignore "broken pipe" exception
+  end
 end
 
 __END__
