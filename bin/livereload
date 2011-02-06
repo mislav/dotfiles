@@ -13,7 +13,7 @@ require 'json'
 require 'sass/plugin'
 require 'fileutils'
 
-API_VERSION = '1.4'
+API_VERSION = '1.5'
 
 web_sockets = []
 debug = !!ARGV.delete('-D')
