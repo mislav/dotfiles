@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby -rubygems
+# not sure who originally wrote this.
+# got it from here: https://gist.github.com/251119
 require "mutter"
 require "httparty"
 
@@ -38,11 +40,11 @@ class Issue
   end
   
   def self.view(id)
-    system "open http://github.com/#{REPO}/issues/#{id}"
+    system "open https://github.com/#{REPO}/issues/#{id}"
   end
   
   def self.browse
-    system "open http://github.com/#{REPO}/issues"
+    system "open https://github.com/#{REPO}/issues"
   end
   
   def self.list(status="open")
