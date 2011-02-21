@@ -4,7 +4,7 @@ setenv CLICOLOR "1"
 setenv LSCOLORS "ExFxCxDxBxegedabagacad"
 
 HOMEBREW=/opt/local
-REE=$HOMEBREW/Cellar/ruby-enterprise-edition/2010.02
+REE=$HOMEBREW/Cellar/ruby-enterprise-edition/2011.02
 
 if [ -d $HOMEBREW ]; then
   [ -d $REE ] && export PATH=$REE/bin:$PATH

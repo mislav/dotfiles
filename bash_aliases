@@ -56,11 +56,11 @@ function mategem {
 }
 
 function r19 {
-  switch-ruby $(brew --prefix)/Cellar/ruby/1.9.2-p136/bin
+  switch-ruby $(brew --prefix)/Cellar/ruby/1.9.2-p180/bin
 }
 
 function r18 {
-  switch-ruby $(brew --prefix)/Cellar/ruby-enterprise-edition/2010.02/bin
+  switch-ruby $(brew --prefix)/Cellar/ruby-enterprise-edition/2011.02/bin
 }
 
 function r186 {
