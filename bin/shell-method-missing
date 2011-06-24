@@ -53,5 +53,8 @@ when /^[A-Za-z0-9_\-\/]+\.gem$/
   run "gem", "install", name
   
 else
-  abort "Error: No matching action defined in #{__FILE__.inspect}"
+  binfile = File.expand_path(command.first) rescue nil
+  unless binfile.nil? or File.exist? binfile
+    warn "Error: No matching action for #{command.inspect} defined in #{__FILE__.inspect}"
+  end
 end
