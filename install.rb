@@ -7,7 +7,7 @@ Dir.chdir File.dirname(__FILE__) do
   dotfiles_dir = Dir.pwd.sub(home + '/', '')
   
   Dir['*'].each do |file|
-    next unless File.extname(file).empty?
+    next if File.directory?(File.join(file, '.git')) or '.rb' == File.extname(file)
     target_name = file == 'bin' ? file : ".#{file}"
     target = File.join(home, target_name)
     unless File.exist? target
