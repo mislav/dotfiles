@@ -1,14 +1,11 @@
 [user]
-	name = Mislav Marohnić
+	name = Mislav Marohnić
 	email = mislav.marohnic@gmail.com
 [apply]
 	whitespace = nowarn
 [alias]
 	co = checkout
 	put = push origin HEAD
-	track = !git-track
-	thanks = !git-thanks
-	workdir = !git-new-workdir
 	up = !git pull --rebase && git push
 	ignored = "!git ls-files --others --exclude-standard"
 	nb = checkout -b
@@ -21,6 +18,7 @@
 	unstage = reset HEAD
 	subadd = !sh -c 'git submodule add $(git config -f"$0".git/config remote.origin.url) "$0"'
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+	ff = merge --ff-only @{u}
 [format]
 	# pretty = format:"%Cblue%ar%Creset\t%s"
 [color]
@@ -29,7 +27,8 @@
 	branch = auto
 [core]
 	excludesfile = /Users/mislav/.gitignore
-	editor = mate -w
+	quotepath = false
+	whitespace = -blank-at-eol
 [mirror]
 	summary = true
 [branch]
