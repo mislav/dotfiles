@@ -1,17 +1,19 @@
 [ -f ~/.bashrc ] && source ~/.bashrc
 
-setenv CLICOLOR "1"
-setenv LSCOLORS "ExFxCxDxBxegedabagacad"
+# setenv CLICOLOR "1"
+# setenv LSCOLORS "ExFxCxDxBxegedabagacad"
 
-HOMEBREW=/opt/local
-REE=$HOMEBREW/Cellar/ruby-enterprise-edition/2011.02
+localbin=/usr/local/bin
 
-if [ -d $HOMEBREW ]; then
-  [ -d $REE ] && export PATH=$REE/bin:$PATH
-  export PATH=$HOMEBREW/sbin:$PATH
-  export PATH=$HOMEBREW/bin:$PATH
+if [ -d $localbin ]; then
+  export PATH=$localbin:$(echo $PATH | sed -E s%$localbin:?%%)
 fi
 
-[ -d ~/bin ] && export PATH=~/bin:$PATH
+if [ -L $localbin/ruby ]; then
+  target=$(readlink $localbin/ruby)
+  rubybin=$(cd $localbin/$(dirname $target) && pwd -P)
+  export PATH=$rubybin:$PATH
+fi
 
-source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
+[ -d ~/.coral/bin ] && export PATH=~/.coral/bin:$PATH
+[ -d ~/bin ] && export PATH=~/bin:$PATH

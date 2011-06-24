@@ -45,15 +45,14 @@ if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
-if [ -f ~/bin/sake-completion ]; then
-  complete -C ~/bin/sake-completion -o default sake
-fi
+homebrew=$(brew --prefix)
 
-git_completion='/opt/local/etc/bash_completion.d/git-completion.bash'
+for file in $(find $homebrew/etc/bash_completion.d -not -type d)
+do
+  source $file 2>/dev/null
+done
 
-if [ -f $git_completion ]; then
-  source $git_completion
-fi
+source $homebrew/Library/Contributions/brew_bash_completion.sh
 
 # Method missing for bash. Add to your .bashrc
 trap 'if ! type -t $BASH_COMMAND >/dev/null; then ~/bin/shell-method-missing $BASH_COMMAND; fi' DEBUG
