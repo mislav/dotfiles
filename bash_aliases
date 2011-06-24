@@ -51,8 +51,18 @@ function gemdoc {
   open $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`/rdoc/index.html
 }
 function mategem {
-  GEMDIR=`gem env gemdir`/gems
-  mate $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`
+  gemdir=$(gem env gemdir)/gems
+  name=$(ls $gemdir | ruby -r rubygems/version -e 'gem = STDIN.lines.
+      map {|l| l =~ /-([^-]+)\s*$/; [$`, Gem::Version.new($1)] if $` == ARGV.first }.
+      compact.sort_by(&:last).last
+    print gem.join("-") if gem
+    ' $1)
+
+  if [ -z "$name" ]; then
+    echo "gem not found" 1>&2
+  else
+    $EDITOR $gemdir/$name
+  fi
 }
 
 function r19 {
