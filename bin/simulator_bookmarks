@@ -9,8 +9,11 @@
 #
 # Apart from specifying the URL with the "-u" argument, you can also pipe it in via STDIN.
 #
-# This only affects the simulator running in the "en_US" locale. To edit bookmarks of
-# a different locale, use the "-l" option:
+# Remove a bookmark:
+#   $ simulator_bookmarks rm "Toggle Livereload"
+#
+# These commands only affect the simulator running with the "en_US" locale.
+# To edit bookmarks of a different locale, use the "-l" option:
 #
 #   $ simulator_bookmarks add "Título" -l es_ES -u http://example.es
 #
@@ -41,6 +44,11 @@ class Bookmarks
 
   def prepend_bookmark(title, url)
     @items.unshift("Title" => title, "URL" => url)
+  end
+
+  def remove_bookmark(title)
+    idx = @items.find_index {|item| item['Title'] == title }
+    @items.delete_at idx if idx
   end
 
   def writable?
@@ -134,6 +142,35 @@ if __FILE__ == $0
     end
 
     if num_edited.zero?
+      warn "Warning: no bookmarks edited"
+      exit 1
+    end
+  when 'rm'
+    title = ARGV.shift
+
+    if title.nil? or title.empty?
+      warn "Error: no title given"
+      exit 1
+    end
+
+    num_removed = 0
+
+    Bookmarks.find_by_locale(locale).each do |file|
+      bookmarks = Bookmarks.new file
+      unless bookmarks.writable?
+        warn "Error: no write permissions to edit boomarks"
+        warn "(Try running with sudo)"
+        exit 1
+      end
+
+      if bookmarks.remove_bookmark title
+        bookmarks.save
+        puts "Edited #{bookmarks.short_path}"
+        num_removed += 1
+      end
+    end
+
+    if num_removed.zero?
       warn "Warning: no bookmarks edited"
       exit 1
     end
