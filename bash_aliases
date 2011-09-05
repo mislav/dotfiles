@@ -88,7 +88,9 @@ function switch-ruby {
 
 # console
 function sc() {
-  if [ -x script/rails ]; then
+  if [ -f config/environment.rb ] && which -s pry; then
+    pry -r./config/environment.rb
+  elif [ -x script/rails ]; then
     script/rails console
   elif [ -x script/console ]; then
     script/console
