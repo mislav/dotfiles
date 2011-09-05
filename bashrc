@@ -16,7 +16,8 @@ if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 parse_git_branch() {
-  (git symbolic-ref -q HEAD || git name-rev --name-only HEAD) 2>/dev/null | sed -E 's:(refs/)?(heads|tags)/(.+): (\3):'
+  (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2>/dev/null | \
+    ruby -pe '$_.sub!(%r{^(?:refs/)?(?:(heads|tags)/)?(.+?)(\^0)?$}, %{ (\\2)})'
 }
 
 PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\h\[\033[00m\]:\[\e[0;31m\]\w\[\e[m\]$(parse_git_branch) $ '
