@@ -1,2 +1,5 @@
 color molokai
 set nonumber
+
+" disable fucking Syntastic
+let g:loaded_syntastic_plugin = 1
