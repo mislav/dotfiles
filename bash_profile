@@ -15,5 +15,8 @@ if [ -L $localbin/ruby ]; then
   export PATH=$rubybin:$PATH
 fi
 
+[ -d ~/.rbenv/bin ] && export PATH="$HOME/.rbenv/bin:$PATH"
 [ -d ~/.coral/bin ] && export PATH=~/.coral/bin:$PATH
 [ -d ~/bin ] && export PATH=~/bin:$PATH
+
+eval "$(rbenv init -)"
