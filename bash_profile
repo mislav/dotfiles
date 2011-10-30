@@ -19,4 +19,4 @@ fi
 [ -d ~/.coral/bin ] && export PATH=~/.coral/bin:$PATH
 [ -d ~/bin ] && export PATH=~/bin:$PATH
 
-eval "$(rbenv init -)"
+[ -d ~/.rbenv/bin ] && eval "$(rbenv init -)"

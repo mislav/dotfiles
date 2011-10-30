@@ -65,23 +65,6 @@ function mategem {
   fi
 }
 
-function r19 {
-  switch-ruby $(brew --prefix)/Cellar/ruby/1.9.2-p180/bin
-}
-
-function r18 {
-  switch-ruby $(brew --prefix)/Cellar/ruby-enterprise-edition/2011.02/bin
-}
-
-function r186 {
-  switch-ruby /opt/ruby1.8.6/bin
-}
-
-function switch-ruby {
-  echo "using $1"
-  export PATH=$(ruby -e 'puts ENV["PATH"].split(":").map { |p| p =~ /\bruby[^a-z]/i ? ARGV[0] : p }.uniq.join(":")' $1)
-}
-
 #########
 # RAILS #
 #########
