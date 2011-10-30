@@ -52,7 +52,7 @@ function gemdoc {
 }
 function mategem {
   gemdir=$(gem env gemdir)/gems
-  name=$(ls $gemdir | ruby -r rubygems/version -e 'gem = STDIN.lines.
+  name=$(ls $gemdir | ruby -rubygems -r rubygems/version -e 'gem = STDIN.lines.
       map {|l| l =~ /-([^-]+)\s*$/; [$`, Gem::Version.new($1)] if $` == ARGV.first }.
       compact.sort_by(&:last).last
     print gem.join("-") if gem
