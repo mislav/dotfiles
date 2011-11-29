@@ -7,3 +7,4 @@
 .com.apple.*
 .idea
 .powenv
+/doc/tags
