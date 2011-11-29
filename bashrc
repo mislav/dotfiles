@@ -54,6 +54,3 @@ do
 done
 
 source $homebrew/Library/Contributions/brew_bash_completion.sh
-
-# Method missing for bash. Add to your .bashrc
-trap 'if ! type -t $BASH_COMMAND >/dev/null; then ~/bin/shell-method-missing $BASH_COMMAND; fi' DEBUG
