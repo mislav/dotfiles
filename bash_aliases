@@ -1,17 +1,3 @@
-# Some useful aliases
-# vi:filetype=sh:
-alias aliases='vim ~/.bash_aliases && source ~/.bash_aliases'
-
-# Function which adds an alias to the current shell and to
-# the ~/.bash_aliases file.
-add-alias ()
-{
-   local name=$1 value="$2"
-   echo "alias $name='$value'" >> ~/.bash_aliases
-   eval "alias $name='$value'"
-   alias $name
-}
-
 #######
 # git #
 #######
@@ -33,7 +19,7 @@ function gco {
 
 function superblame {
   git log --format=%h --author=$1 $2 | \
-    xargs -L1 -ISHA git diff --shortstat 'SHA^..SHA' app config/environment* config/initializers/ public/stylesheets/ | \
+    xargs -L1 -ISHA git diff --shortstat 'SHA^..SHA' -- app config/environment* config/initializers/ public/stylesheets/ | \
     ruby -e 'n=Hash.new(0); while gets; i=0; puts $_.gsub(/\d+/){ n[i+=1] += $&.to_i }; end' | tail -n1
 }
 
@@ -52,7 +38,7 @@ function gemdoc {
 }
 function mategem {
   gemdir=$(gem env gemdir)/gems
-  name=$(ls $gemdir | ruby -rubygems -r rubygems/version -e 'gem = STDIN.lines.
+  name=$(ls $gemdir | /usr/bin/ruby -rubygems -r rubygems/version -e 'gem = STDIN.lines.
       map {|l| l =~ /-([^-]+)\s*$/; [$`, Gem::Version.new($1)] if $` == ARGV.first }.
       compact.sort_by(&:last).last
     print gem.join("-") if gem
