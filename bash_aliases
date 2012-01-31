@@ -26,6 +26,12 @@ function superblame {
 ########
 # RUBY #
 ########
+
+if which noglob > /dev/null; then
+  alias rake='noglob rake' # allows square brackets for rake task invocation
+  alias brake='noglob bundle exec rake' # execute the bundled rake gem
+fi
+
 # really awesome function, use: cdgem <gem name>, cd's into your gems directory
 # and opens gem that best matches the gem name provided
 function cdgem {
