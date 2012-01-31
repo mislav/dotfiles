@@ -1,21 +1,20 @@
 #!/usr/bin/env ruby -rubygems -w
 old_level, $-w = $-w, nil
 begin
-  require 'albino'
+  require 'pygments'
   require 'redcarpet'
-  require 'nokogiri'
 ensure
   $-w = old_level
 end
 
-syntax_highlighter = ->(html) {
-  doc = Nokogiri::HTML(html)
-  doc.search("//pre[@lang]").each do |pre|
-    pre.replace Albino.colorize(pre.text.rstrip, pre[:lang])
+class HTMLwithAlbino < Redcarpet::Render::HTML
+  def block_code(code, language)
+    Pygments.highlight(code, :lexer => language)
   end
-  doc.to_s
-}
+end
 
-options = [:hard_wrap, :filter_html, :autolink, :no_intraemphasis, :fenced_code, :gh_blockcode]
+markdown = Redcarpet::Markdown.new \
+  HTMLwithAlbino.new(:filter_html => true),
+  :autolink => true, :no_intra_emphasis => true, :fenced_code_blocks => true
 
-puts syntax_highlighter.(Redcarpet.new(ARGF.read, *options).to_html)
+puts markdown.render(ARGF.read)
