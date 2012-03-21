@@ -4,23 +4,12 @@
 [apply]
 	whitespace = nowarn
 [alias]
-	co = checkout
-	put = push origin HEAD
-	up = !git pull --rebase && git push
-	ignored = "!git ls-files --others --exclude-standard"
 	nb = checkout -b
-	pending = !git --no-pager log origin/master..master && echo
-	db = !sh -c 'git branch -D "$1" && git push origin ":$1"' 2> /dev/null
-	missing = !sh -c 'git cherry "$0" | cut -sd + -f 2 | xargs "git show"'
 	lc = log ORIG_HEAD.. --stat --no-merges
 	conflicts = !git ls-files --unmerged | cut -c51- | sort -u | xargs $EDITOR
 	resolve = !git ls-files --unmerged | cut -c51- | sort -u | xargs git add
-	unstage = reset HEAD
-	subadd = !sh -c 'git submodule add $(git config -f"$0".git/config remote.origin.url) "$0"'
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar)%Creset' --abbrev-commit --date=relative
 	ff = merge --ff-only @{u}
-[format]
-	# pretty = format:"%Cblue%ar%Creset\t%s"
 [color]
 	diff = auto
 	status = auto
