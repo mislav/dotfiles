@@ -10,10 +10,10 @@ alias gb='git branch -v'
 alias st='git status -sb'
 
 function gco {
-  if [ -z "$1" ]; then
+  if [ $# -eq 0 ]; then
     git checkout master
   else
-    git checkout $1
+    git checkout "$@"
   fi
 }
 
@@ -27,35 +27,10 @@ function superblame {
 # RUBY #
 ########
 
-if which noglob > /dev/null; then
+if which noglob >/dev/null; then
   alias rake='noglob rake' # allows square brackets for rake task invocation
   alias brake='noglob bundle exec rake' # execute the bundled rake gem
 fi
-
-# really awesome function, use: cdgem <gem name>, cd's into your gems directory
-# and opens gem that best matches the gem name provided
-function cdgem {
-  cd `gem env gemdir`/gems
-  cd `ls | grep $1 | sort | tail -1`
-}
-function gemdoc {
-  GEMDIR=`gem env gemdir`/doc
-  open $GEMDIR/`ls $GEMDIR | grep $1 | sort | tail -1`/rdoc/index.html
-}
-function mategem {
-  gemdir=$(gem env gemdir)/gems
-  name=$(ls $gemdir | /usr/bin/ruby -rubygems -r rubygems/version -e 'gem = STDIN.lines.
-      map {|l| l =~ /-([^-]+)\s*$/; [$`, Gem::Version.new($1)] if $` == ARGV.first }.
-      compact.sort_by(&:last).last
-    print gem.join("-") if gem
-    ' $1)
-
-  if [ -z "$name" ]; then
-    echo "gem not found" 1>&2
-  else
-    $EDITOR $gemdir/$name
-  fi
-}
 
 #########
 # RAILS #
@@ -63,25 +38,31 @@ function mategem {
 
 # console
 function sc() {
-  if [ -f config/environment.rb ] && which -s pry; then
+  if [ -f config/environment.rb ] && which pry >/dev/null; then
     pry -r./config/environment.rb
   elif [ -x script/rails ]; then
     script/rails console
   elif [ -x script/console ]; then
     script/console
+  elif [ -f app.rb ]; then
+    local repl=$(which pry >/dev/null && echo pry || echo irb)
+    local args=$([ -n "$BUNDLE_GEMFILE" -o -f Gemfile ] && echo "-rbundler/setup")
+    $repl $args -I. -r./app.rb
   else
     echo "no script/rails or script/console found" >&2
+    return 1
   fi
 }
 
 # server
 function ss() {
   if [ -x script/rails ]; then
-    script/rails server
+    script/rails server "$@"
   elif [ -x script/server ]; then
-    script/server
+    script/server "$@"
   else
     echo "no script/rails or script/server found" >&2
+    return 1
   fi
 }
 
@@ -105,7 +86,7 @@ function sr() {
     echo "Restarting server ..."
     kill -USR2 `cat tmp/pids/server.pid`
   else
-    echo "Restarting Passenger instances ..."
+    echo "Restarting application ..."
     touch tmp/restart.txt
   fi
 }
@@ -119,18 +100,8 @@ alias j="jobs -l"
 alias l="ls -lah"
 alias ll="ls -l"
 alias la='ls -A'
-# alias pu="pushd"
-# alias po="popd"
 
 # mojombo http://gist.github.com/180587
 function psg {
   ps wwwaux | egrep "($1|%CPU)" | grep -v grep
-}
-
-#
-# Csh compatability:
-#
-alias unsetenv=unset
-function setenv () {
-  export $1="$2"
 }
