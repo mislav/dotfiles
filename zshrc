@@ -18,25 +18,31 @@ ZSH=$HOME/.oh-my-zsh
 ## PATH tweaks ##
 
 
-brewbin=/usr/local/bin
+(){
+local brewbin=/usr/local/bin
 if [ -d $brewbin ]; then
-  export PATH=$brewbin:$(echo $PATH | sed -E "s%$brewbin:?%%")
+  local brewprefix=$(dirname $brewbin)
+  export PATH=$brewprefix/sbin:"$PATH"
+  export PATH=$brewbin:"$(echo $PATH | sed -E "s%$brewbin:?%%")"
 fi
+}
 
 if [ -d $HOME/.rbenv/bin ]; then
   export PATH="$HOME/.rbenv/bin:$PATH"
   eval "$(rbenv init -)"
 fi
 
-[ -d ~/.coral/bin ] && export PATH=~/.coral/bin:$PATH
-[ -d ~/bin ] && export PATH=~/bin:$PATH
+[ -d ~/.coral/bin ] && export PATH=~/.coral/bin:"$PATH"
+[ -d ~/bin ] && export PATH=~/bin:"$PATH"
 
 
 ## load few oh-my-zsh scripts ##
 
 
 if [ -d $ZSH ]; then
-  # TODO: also load spectrum?
+  (){
+  local config_file plugin
+
   for config_file (completion history); do
     source $ZSH/lib/$config_file.zsh
   done
@@ -44,6 +50,7 @@ if [ -d $ZSH ]; then
   for plugin (heroku gem bundler brew); do
     fpath=($ZSH/plugins/$plugin $fpath)
   done
+  }
 fi
 
 # Load and run compinit
@@ -54,15 +61,14 @@ compinit -i
 ## misc customization ##
 
 
+export EDITOR=vim
+
 # C-x C-e to edit command-line in EDITOR
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\C-x\C-e' edit-command-line
 
 [ -f ~/.bash_aliases ] && source ~/.bash_aliases
-
-# enable git autocompletion for hub
-compdef hub=git
 
 autoload colors; colors;
 export LSCOLORS="Gxfxcxdxbxegedabagacad"
@@ -77,6 +83,9 @@ ls --color -d . &>/dev/null 2>&1 && alias ls='ls --color=tty' || alias ls='ls -G
 export GREP_OPTIONS='--color=auto'
 export GREP_COLOR='1;32'
 
+if which hub >/dev/null; then
+  eval "$(hub alias -s)"
+fi
 
 ## shell prompt ##
 
