@@ -1,7 +1,9 @@
 #!/usr/bin/env macruby -wKU
 
 framework 'Foundation'
+$VERBOSE = nil
 framework 'AppKit' # for decoding classes such as NSMutableParagraphStyle
+$VERBOSE = true
 framework 'AddressBook'
 
 # based on Logorrhea from Spiny Software
@@ -101,6 +103,10 @@ class ABAddressBook
   def find_chat_buddy(id)
     search_properties(%w[Email AIMInstant JabberInstant URLs], for:id).first
   end
+
+  def find_by_email(email)
+    search_properties(%w[Email], for:email).first
+  end
 end
 
 # adding a method to String for some reason doesn't work for all strings
@@ -140,7 +146,11 @@ if $0 == __FILE__
     ab = ABAddressBook.sharedAddressBook
 
     lambda { |id|
-      buddy = ab.find_chat_buddy(id)
+      if id =~ /^e:(.+)/ and $1.include? '@'
+        buddy = ab.find_by_email($1)
+      else
+        buddy = ab.find_chat_buddy(id)
+      end
       buddy ? (buddy.nickname || buddy.first_name) : id.split('@').first
     }
   end
