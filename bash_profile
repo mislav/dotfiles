@@ -1,23 +1,16 @@
-[ -f ~/.bashrc ] && source ~/.bashrc
+# vim:ft=sh:
 
-# setenv CLICOLOR "1"
-# setenv LSCOLORS "ExFxCxDxBxegedabagacad"
+# don't put duplicate lines in the history. See bash(1) for more options
+export HISTCONTROL=ignoredups
 
-localbin=/usr/local/bin
+export EDITOR=vim
 
-if [ -d $localbin ]; then
-  export PATH=$localbin:$(echo $PATH | sed -E s%$localbin:?%%)
+if [[ $TERM =~ xterm ]]; then
+  PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
 fi
 
-if [ -L $localbin/ruby ]; then
-  target=$(readlink $localbin/ruby)
-  rubybin=$(cd $localbin/$(dirname $target) && pwd -P)
-  export PATH=$rubybin:$PATH
-fi
+for file in ~/.shrc/*.sh; do
+  source "$file"
+done
 
-if [ -d ~/.rbenv/bin ]; then
-  export PATH="$HOME/.rbenv/bin:$PATH"
-  eval "$(rbenv init -)"
-fi
-[ -d ~/.coral/bin ] && export PATH=~/.coral/bin:$PATH
-[ -d ~/bin ] && export PATH=~/bin:$PATH
+[ -d ~/bin ] && export PATH=~/bin:"$PATH"
