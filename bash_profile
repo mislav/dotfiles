@@ -12,5 +12,3 @@ fi
 for file in ~/.shrc/*.sh; do
   source "$file"
 done
-
-[ -d ~/bin ] && export PATH=~/bin:"$PATH"

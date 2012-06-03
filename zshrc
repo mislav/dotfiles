@@ -47,5 +47,3 @@ export GREP_COLOR='1;32'
 for file in ~/.shrc/*.sh; do
   source "$file"
 done
-
-[ -d ~/bin ] && export PATH=~/bin:"$PATH"
