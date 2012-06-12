@@ -3,9 +3,7 @@ parse_git_branch() {
   (command git symbolic-ref -q HEAD || command git name-rev --name-only --no-undefined --always HEAD) 2>/dev/null
 }
 
-case $(basename "$SHELL") in
-
-bash )
+if [[ -n $BASH ]]; then
   # set variable identifying the chroot you work in (used in the prompt below)
   if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
@@ -19,7 +17,7 @@ bash )
   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\h\[\033[00m\]:\[\e[0;31m\]\w\[\e[m\]$(git_where) $ '
   ;;
 
-zsh )
+elif [[ -n $ZSH_VERSION ]]; then
   local GIT_PROMPT_PREFIX="%{$reset_color%}%{$fg[green]%}["
   local GIT_PROMPT_SUFFIX="]%{$reset_color%}"
   local GIT_PROMPT_DIRTY="%{$fg[red]%}*%{$reset_color%}"
@@ -55,6 +53,5 @@ zsh )
 
   # basic prompt on the left
   PROMPT='%{$fg[cyan]%}%~% %(?.%{$fg[green]%}.%{$fg[red]%})%B$%b '
-  ;;
 
-esac
+fi
