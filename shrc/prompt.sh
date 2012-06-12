@@ -9,13 +9,11 @@ if [[ -n $BASH ]]; then
     debian_chroot=$(cat /etc/debian_chroot)
   fi
 
-  git_where() {
-    ref="$(parse_git_branch)"
-    echo ${ref#(refs/heads/|tags/)}
+  _git_where() {
+    ref="$(parse_git_branch)" && echo " (${ref#refs/heads/})"
   }
 
-  PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\h\[\033[00m\]:\[\e[0;31m\]\w\[\e[m\]$(git_where) $ '
-  ;;
+  PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\h\[\033[00m\]:\[\e[0;31m\]\w\[\e[m\]$(_git_where) $ '
 
 elif [[ -n $ZSH_VERSION ]]; then
   local GIT_PROMPT_PREFIX="%{$reset_color%}%{$fg[green]%}["
