@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-dir=$(pwd)
-brew=$(brew --prefix)
+dir="$(cd "${1:-$PWD}" && pwd)"
+brew="$(brew --prefix)"
 
-logdir=$brew/var/log/nginx
-mkdir -p $logdir
+logdir="$brew/var/log/nginx"
+mkdir -p "$logdir"
 
 # seems like there's no other way for having a dynamic config:
 echo "daemon off;
@@ -15,17 +15,21 @@ events { worker_connections 1024; }
 
 http {
   include $brew/etc/nginx/mime.types;
-  
+
   access_log  $logdir/access_log;
-  
+
   # client_body_temp_path /tmp/nginx-dir/client_body_temp;
   # fastcgi_temp_path     /tmp/nginx-dir/client_body_temp;
   # proxy_temp_path       /tmp/nginx-dir/proxy_temp;
-  
+
   server {
     listen 3000; server_name localhost;
     root $dir;
+
+    location / {
+      autoindex on;
+    }
   }
 }" > /tmp/nginx-dir.conf
 
-$brew/sbin/nginx -c /tmp/nginx-dir.conf
+"$brew/sbin/nginx" -c /tmp/nginx-dir.conf
