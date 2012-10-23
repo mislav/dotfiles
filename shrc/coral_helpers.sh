@@ -7,17 +7,20 @@
 # If no extra arguments are given, it will try to open the project's
 # README file by default.
 dive() {
-  local dir="$(coral path "$1" 2>/dev/null || coral gem-dir "$1")"
+  local dir="$(coral gem-dir "$1" 2>/dev/null || coral path "$1")"
   [[ -n $dir ]] || return 1
   shift 1
 
-  # refresh tags
-  ( cd "$dir"
+  # Use pushd/popd instead of just cd inside a subshell so not to confuse OS X
+  # Terminal's resume from last directory feature.
+  ( pushd "$dir" >/dev/null
+    # refresh tags
     if [[ -d .git ]]; then
       ctags -R --languages=ruby --exclude=.git --tag-relative -f.git/tags
     else
       ctags -R --languages=ruby
     fi
+    popd >/dev/null
   )
 
   local editor=${VISUAL:-$EDITOR}
