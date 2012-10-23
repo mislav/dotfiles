@@ -13,3 +13,8 @@ function gco {
     git checkout "$@"
   fi
 }
+
+# TODO: install git hook to prevent pushing commits with "TODO:"
+function todo {
+  git commit --allow-empty -m "TODO: $*"
+}
