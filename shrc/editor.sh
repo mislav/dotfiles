@@ -6,10 +6,3 @@ if [[ -z $TMUX ]]; then
   [[ "$(uname -s)" == Darwin ]] && GEM_EDITOR=mvim || GEM_EDITOR=gvim
   export GEM_EDITOR
 fi
-
-if which zle >/dev/null; then
-  # C-x C-e to edit command-line in EDITOR
-  autoload -U edit-command-line
-  zle -N edit-command-line
-  bindkey '\C-x\C-e' edit-command-line
-fi
