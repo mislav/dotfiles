@@ -6,21 +6,26 @@
 # oh-my-zsh checkout (optional)
 ZSH=$HOME/.oh-my-zsh
 
-# use case-sensitive completion
-# CASE_SENSITIVE="true"
-
-# if you want red dots to be displayed while waiting for completion
-# COMPLETION_WAITING_DOTS="true"
-
 # load very few oh-my-zsh scripts
 if [ -d $ZSH ]; then
   (){
   local config_file plugin
 
+  # Use case-sensitive completion
+  # CASE_SENSITIVE=true
+
+  # Display red dots while waiting for completion
+  # COMPLETION_WAITING_DOTS=true
+
+  # completion:  tweaks tab completion
+  # history:     large size, ignore dups, share history
+  # termsupport: screen, iterm, Terminal.app title
+  # terminalapp: set Terminal.app resume directory
   for config_file (lib/completion lib/history lib/termsupport plugins/terminalapp/terminalapp.plugin); do
     source $ZSH/$config_file.zsh
   done
 
+  # load specialized completions
   for plugin (heroku gem bundler brew); do
     fpath=($ZSH/plugins/$plugin $fpath)
   done
