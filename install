@@ -8,7 +8,7 @@ for file in "$here"/*; do
   name="$(basename "$file" .md)"
   [[ $name = bin ]] && dotname="$name" || dotname=".${name}"
 
-  if [[ !( "install readme" =~ $name || -e ~/$dotname || -d $file/.git ) ]]; then
+  if ! [[ "install readme" =~ $name || $name =~ ".plist" || -e ~/$dotname || -d $file/.git ]]; then
     ln -sfhv ${file#$HOME/} "${HOME}/${dotname}"
   fi
 done
