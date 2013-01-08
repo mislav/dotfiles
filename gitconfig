@@ -5,9 +5,7 @@
 	whitespace = nowarn
 [alias]
 	nb = checkout -b
-	lc = log ORIG_HEAD.. --stat --no-merges
-	conflicts = !git ls-files --unmerged | cut -c51- | sort -u | xargs $EDITOR
-	resolve = !git ls-files --unmerged | cut -c51- | sort -u | xargs git add
+	lc = log @{1}.. --stat --no-merges
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar)%Creset' --abbrev-commit --date=relative
 	ff = merge --ff-only @{u}
 [color]
