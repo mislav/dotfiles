@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-here="$(dirname "$0")"
-here="$(cd "$here"; pwd)"
+here="$(cd "${0%/*}"; pwd)"
 
 for file in "$here"/*; do
   name="$(basename "$file" .md)"
@@ -12,3 +11,15 @@ for file in "$here"/*; do
     ln -sfhv ${file#$HOME/} "${HOME}/${dotname}"
   fi
 done
+
+while read file; do
+  bin="bin/${file##*/}"
+  fullbin="${here}/${bin}"
+
+  if ! [[ -e "${here}/${file}" ]]; then
+    echo "not found: ${file}" >&2
+  elif ! [[ -e $fullbin ]]; then
+    ln -sfhv "../${file}" "$fullbin"
+    echo "$bin" >> "${here}/.git/info/exclude"
+  fi
+done < "${here}/.external"
