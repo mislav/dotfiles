@@ -3,6 +3,9 @@ if which noglob >/dev/null; then
   alias brake='noglob bundle exec rake' # execute the bundled rake gem
 fi
 
+export RUBY_GC_MALLOC_LIMIT=60000000
+export RUBY_FREE_MIN=200000
+
 # console
 function sc() {
   if [ -f config/environment.rb ] && which pry >/dev/null; then
