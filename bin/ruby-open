@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -wKU
+#!/usr/bin/env ruby
 all = !!ARGV.delete('-a')
 
 unless ENV['EDITOR']
