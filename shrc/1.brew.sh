@@ -11,6 +11,8 @@ if [ -x $brew/bin/brew ]; then
     done
 
     source $brew/Library/Contributions/brew_bash_completion.sh
+  elif [[ -n $ZSH_VERSION ]]; then
+    fpath=($brew/share/zsh/site-functions $fpath)
   fi
 fi
 
