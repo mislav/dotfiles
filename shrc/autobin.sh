@@ -16,4 +16,17 @@ if [[ -n $ZSH_VERSION ]]; then
 
   [[ -z $chpwd_functions ]] && chpwd_functions=()
   chpwd_functions=($chpwd_functions _autobin_hook)
+
+  autobin() {
+    local dir="${1:-$PWD}"
+    [[ -d $dir/bin ]] && dir="${dir}/bin"
+    if [[ -d $dir ]]; then
+      grep "$dir" "$AUTOBIN_LIST" >/dev/null 2>&1 || echo "$dir" >> $AUTOBIN_LIST
+      cd .
+      hash -r 2>/dev/null || true
+    else
+      echo "invalid directory: $dir" >&2
+      return 1
+    fi
+  }
 fi
