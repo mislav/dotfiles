@@ -4,7 +4,17 @@ require 'irb/completion'
 IRB.conf[:PROMPT_MODE] = :SIMPLE
 require 'pp'
 
-load File.dirname(__FILE__) + '/.railsrc' if $0 == 'irb' && ENV['RAILS_ENV']
+if $0 == 'irb' && ENV['RAILS_ENV']
+  def l(stream = STDOUT)
+    ActiveRecord::Base.logger = Logger.new(stream)
+    if Rails::VERSION::MAJOR >= 2 and Rails::VERSION::MINOR >= 2
+      ActiveRecord::Base.connection_pool.clear_reloadable_connections!
+    else
+      ActiveRecord::Base.clear_active_connections!
+    end
+    "logger reset!"
+  end
+end
 
 # def time(times = 1)
 #   ret = nil
