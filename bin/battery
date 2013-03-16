@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Adapted from: https://github.com/Goles/Battery
+
+battery_charge() {
+  ioreg -c AppleSmartBattery -w0 | \
+    grep -o '"[^"]*" = [^ ]*' | \
+    sed -e 's/= //g' -e 's/"//g' | \
+    sort | \
+    while read key value; do
+      case $key in
+        "MaxCapacity")
+          export maxcap=$value;;
+        "CurrentCapacity")
+          export curcap=$value;;
+      esac
+      if [[ -n "$maxcap" && -n $curcap ]]; then
+        CAPACITY=$(( 100 * curcap / maxcap))
+        printf "%d" $CAPACITY
+        break
+      fi
+    done
+}
+
+BATTERY_STATUS=`battery_charge`
+[ -z "$BATTERY_STATUS" ] && exit 1
+
+if [ $BATTERY_STATUS -lt 25 ]; then
+  color=red
+elif [ $BATTERY_STATUS -lt 75 ]; then
+  color=yellow
+else
+  color=green
+fi
+
+echo "#[fg=${color}][${BATTERY_STATUS}%]"
