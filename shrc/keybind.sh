@@ -1,4 +1,4 @@
-if [[ -n $ZSH_VERSION ]]; then
+if [ -n "$ZSH_VERSION" ]; then
   # Select "emacs" keymap.
   # This enables:
   # - Ctrl-a: beginning of line

@@ -1,4 +1,4 @@
-if [[ -n $ZSH_VERSION ]]; then
+if [ -n "$ZSH_VERSION" ]; then
   [[ -z $AUTOBIN_LIST ]] && AUTOBIN_LIST=~/.config/autobin
 
   _autobin_hook() {
