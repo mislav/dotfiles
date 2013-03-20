@@ -4,7 +4,11 @@
 <dict>
 	<key>AFRStrokeThickness</key>
 	<real>0.0</real>
+	<key>AdjustWindowForFontSizeChange</key>
+	<true/>
 	<key>AdvancedFontRendering</key>
+	<false/>
+	<key>AllowClipboardAccess</key>
 	<false/>
 	<key>AnimateDimming</key>
 	<false/>
@@ -100,6 +104,8 @@
 	<string></string>
 	<key>NSRepeatCountBinding</key>
 	<string></string>
+	<key>NSScrollAnimationEnabled</key>
+	<false/>
 	<key>NSTableView Columns KeyBingingTable</key>
 	<array>
 		<data>
@@ -117,10 +123,25 @@
 	<array/>
 	<key>NSTableView Sort Ordering KeyBingingTable</key>
 	<array/>
+	<key>NSToolbar Configuration Terminal Toolbar</key>
+	<dict>
+		<key>TB Display Mode</key>
+		<integer>1</integer>
+		<key>TB Icon Size Mode</key>
+		<integer>1</integer>
+		<key>TB Is Shown</key>
+		<integer>0</integer>
+		<key>TB Size Mode</key>
+		<integer>1</integer>
+	</dict>
+	<key>NSWindow Frame NSFontPanel</key>
+	<string>964 36 445 270 0 0 1440 878 </string>
 	<key>NSWindow Frame Preferences</key>
-	<string>346 234 924 485 0 0 1440 878 </string>
+	<string>316 242 924 485 0 0 1440 878 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>142 346 570 451 0 0 1440 878 </string>
+	<string>0 0 1440 900 0 0 1440 878 </string>
+	<key>NSWindow Frame iTerm Window 1</key>
+	<string>183 68 650 451 0 0 1440 878 </string>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -555,7 +576,7 @@
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Inconsolata 15</string>
+			<string>Inconsolata 18</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -792,7 +813,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2012-12-11T11:01:43Z</date>
+	<date>2013-03-20T09:22:45Z</date>
 	<key>SavePasteHistory</key>
 	<false/>
 	<key>ShowBookmarkName</key>
@@ -813,6 +834,8 @@
 	<false/>
 	<key>TmuxDashboardLimit</key>
 	<integer>10</integer>
+	<key>ToolbarVisible</key>
+	<false/>
 	<key>TripleClickSelectsFullWrappedLines</key>
 	<false/>
 	<key>URLHandlersByGuid</key>
@@ -834,6 +857,6 @@
 	<key>WordCharacters</key>
 	<string>/-+\~_.</string>
 	<key>iTerm Version</key>
-	<string>1.0.0.20120203</string>
+	<string>1.0.0.20130319</string>
 </dict>
 </plist>
