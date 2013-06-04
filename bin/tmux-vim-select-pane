@@ -5,7 +5,7 @@ set -e
 
 cmd="$(tmux display -p '#{pane_current_command}')"
 
-if [ "${cmd,,*}" = "vim" ]; then
+if [[ `echo ${cmd,,*} | xargs basename` =~ vim|vi ]]; then
   direction="$(echo "${1#-}" | tr 'lLDUR' '\\hjkl')"
   # forward the keystroke to Vim
   tmux send-keys "C-$direction"
