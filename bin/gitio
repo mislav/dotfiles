@@ -20,5 +20,13 @@ if ! [[ $url =~ "github.com" ]]; then
   exit 1
 fi
 
+if [ -n "$code" ]; then
+  if existing="$(curl -ifs "http://git.io/${code}" 2>/dev/null | grep -i '^Location:')"; then
+    echo "Error: \`${code}' is already taken" >&2
+    echo "$existing" >&2
+    exit 1
+  fi
+fi
+
 short="$(curl -fsS git.io/create -d "url=$url" ${code:+-d code=$code})"
 tee <<<"http://git.io/${short}" >(pbcopy)
