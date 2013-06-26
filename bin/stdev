@@ -1,0 +1,16 @@
+#!/usr/bin/ruby
+# Calculate mean and standard deviation from a stream of numbers passed as lines of input.
+
+values = []
+
+ARGF.each do |line|
+  values << line.to_f if line =~ /\d/
+end
+
+sum   = values.inject(:+)
+mean  = sum.to_f / values.size
+diffs = values.map {|v| (v - mean) ** 2 }
+stdev = Math.sqrt(diffs.inject(:+).to_f / values.size)
+
+puts "mean:  %7.3f" % mean
+puts "stdev: %7.3f" % stdev
