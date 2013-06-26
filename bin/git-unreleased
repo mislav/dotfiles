@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Shows git commits since the last tagged version. If library code appears to
+# be contained in `lib` or `libexec` directories, show changes pertaining to just that code.
+set -e
+
+paths=""
+num_libfiles="$(git ls-files -- lib libexec | wc -l)"
+if [ $num_libfiles -gt 0 ]; then
+  paths="bin lib libexec"
+fi
+
+desc="$(git describe --tags HEAD)"
+
+# check for "<tag>-<num_commits>-<sha>" format
+if [[ "$desc" == *-*-g* ]]; then
+  tag_with_num="${desc%-*}"
+  num_commits="${tag_with_num##*-}"
+  tag="${tag_with_num%-*}"
+else
+  num_commits=0
+  tag="$desc"
+fi
+
+if [ $num_commits -gt 0 ]; then
+  format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar)%Creset'
+
+  echo "${num_commits} commits since ${tag}"
+  git log --graph --format="$format" "${tag}.." -- $paths
+else
+  echo "no commits since ${tag}"
+fi
