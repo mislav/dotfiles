@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Usage: pair [<github-user>] [-t <tmux-session>]
+#
+# Copy the command to clipboard which grants another person access to the tmux
+# session on your machine. The resulting command is in format:
+#
+#   ssh -t <USER>@<HOST> 'tmux attach -t <SESSION>'
+#
+# When given a GitHub username, it will adopt SSH keys from their GitHub
+# account and add them to your `~/.ssh/authorized_keys`.
+
+# Requirements:
+# - tmux
+# - ssh server
+# - "github-auth" gem
+
+set -e
+
+tmux_session=""
+github_user=""
+
+while [ -n "$1" ]; do
+  case "$1" in
+  '-h' | '--help' )
+    sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
+    exit 0
+    ;;
+  '-t'* )
+    tmux_session="${1:2}"
+    if [ -z "$tmux_session" ]; then
+      tmux_session="$2"
+      shift 2
+    else
+      shift 1
+    fi
+    ;;
+  * )
+    github_user="$1"
+    shift 1
+  esac
+done
+
+ssh_port=22
+
+if ! nc -zv localhost $ssh_port >/dev/null 2>&1; then
+  echo "Error: it seems that sshd is not running on the port $ssh_port" >&2
+  if [ "$(uname -s)" = "Darwin" ]; then
+    echo "Tip: System Preferences -> Sharing -> enable 'Remote Login'" >&2
+  fi
+  exit 1
+fi
+
+host="$(curl -fsS icanhazip.com)"
+tmux="$(which tmux)"
+
+if [ -n "$github_user" ]; then
+  gh-auth add "$github_user"
+fi
+
+if [ -z "$tmux_session" ]; then
+  tmux_session="$(tmux display -p '#{session_name}')"
+fi
+
+echo ssh -t ${USER}@${host} "'${tmux} at -t ${tmux_session}'" | tee >(pbcopy)
