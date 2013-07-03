@@ -2,6 +2,8 @@
 
 Mislav's configuration files for bash, zsh, git, ruby, and more.
 
+See also: [mislav/vimfiles](https://github.com/mislav/vimfiles)
+
 ## Installation
 
 Clone somewhere, then run the `install` script:
@@ -15,34 +17,82 @@ It won't touch your existing dotfiles, but will symlink the ones that don't
 exist. If you want to replace your existing dotfiles, simply move them to a
 backup location and run `install` again.
 
+## Misc. commands in `bin`
+
+Check [the `bin` directory](https://github.com/mislav/dotfiles/tree/master/bin) for awesome commands such as:
+
+- ansi2html
+- git-unreleased
+- pair
+- tmux-session
+
+## zsh
+
+- enables completions
+
+- enables Emacs key bindings:
+  - `C-a`/`C-e` - beginning/end of line
+  - `C-r`/`C-s` - incremental history search backward/forward
+
+- `C-x C-e` - edit current command-line in $EDITOR
+
+- shell prompt includes:
+  1. current directory
+  2. last command failed status indicator
+  3. git branch
+  4. rbenv version
+
+- `autobin` - whitelists current directory's `bin` dir that it should get
+  prepended to $PATH whenever we `cd` into this project and removed when we
+  leave.
+
+## ruby
+
+- `sc` - smart `script/console`; works for Rails 2, Rails 3, Sinatra
+- `ss` - smart `script/server`; works for Rails 2, Rails 3
+- `sr` - Passenger/Pow server restart (`touch tmp/restart.txt`)
+
+## git
+
+- `gl` - `git pull`
+- `gp` - `git push`
+- `gd` - `git diff`
+- `gc` - `git commit -v`
+- `gca` - `git commit -v -a`
+- `gb` - `git branch -v`
+- `st` - `git status -sb`
+- `gco` - `git checkout`
+
 ## tmux
 
-C-a
-% vertical split
-" horizontal split
-! break pane into new window
-c new window
+Prefix: `C-a`
 
-o select next pane
-{ swap pane with previous
-} swap pane with next
-s interactive session & window browser
-w interactive window browser
-n next window
-p previous window
-) next session
-( previous session
-; select previously active pane
-l select previously active window (FIXME)
+    % vertical split
+    " horizontal split
+    ! break pane into new window
+    c new window
 
-$ rename session
-, rename window
+    o select next pane
+    { swap pane with previous
+    } swap pane with next
+    n next window
+    p previous window
+    ) next session
+    ( previous session
+    ; select previously active pane
+    l select previously active window
 
-: command prompt
-d detach
-f search text in open windows
+    s interactive session & window browser
+    w interactive window browser
 
-[ copy mode
-] paste buffer
-# list buffers
-- delete buffer
+    $ rename session
+    , rename window
+
+    : command prompt
+    d detach
+    f search text in open windows
+
+    [ copy mode
+    ] paste buffer
+    # list buffers
+    - delete buffer
