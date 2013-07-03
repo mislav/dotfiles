@@ -1,8 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 shopt -s nocaseglob
 
-file="$(ls readme.* | head -1)"
+if [ $# -gt 0 ]; then
+  file="$1"
+else
+  file="$(ls readme.* | head -1)"
+fi
 
 if [[ -n $file ]]; then
   coral render-markup "$file" | bcat
