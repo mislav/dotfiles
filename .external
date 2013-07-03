@@ -1,4 +1,6 @@
 garybernhardt/bin/git-churn
+garybernhardt/bin/rename-identifier
+garybernhardt/bin/reload-chrome
 pengwynn/bin/addr
 pengwynn/bin/argv
 pengwynn/bin/domainr
