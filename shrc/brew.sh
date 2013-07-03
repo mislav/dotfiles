@@ -12,7 +12,8 @@ if [ -x "/usr/local/Library" ]; then
 
   elif [ -n "$ZSH_VERSION" ]; then
     # source /usr/local/Library/Contributions/brew_zsh_completion.zsh
-    fpath=(/usr/local/share/zsh/site-functions $fpath)
+    site_fn="/usr/local/share/zsh/site-functions"
+    [[ -z ${fpath[(r)$site_fn]} ]] && fpath=($site_fn $fpath)
 
   fi
 fi
