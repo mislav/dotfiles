@@ -24,6 +24,7 @@ Check [the `bin` directory](https://github.com/mislav/dotfiles/tree/master/bin) 
 - ansi2html
 - git-unreleased
 - pair
+- proxy
 - tmux-session
 
 ## zsh
@@ -65,7 +66,19 @@ Check [the `bin` directory](https://github.com/mislav/dotfiles/tree/master/bin) 
 
 ## tmux
 
-Prefix: `C-a`
+- `C-h/j/k/l` - switch to pane in the given direction
+- `C-\\` - toggle between last active panes
+
+Under tmux prefix `C-a`:
+
+- `C-l` - clear terminal
+- `S` - switch to a session that starts with given name, or switch to the last
+  session if no name given
+- `m` - open man page in a vertical split
+- `g` - tail `log/development.log` in a new window
+- `R` - source `~/.tmux.conf` after changes
+
+Regular tmux keybindings:
 
     % vertical split
     " horizontal split
