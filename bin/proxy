@@ -1,0 +1,348 @@
+#!/usr/bin/env ruby
+# Usage: proxy [<port=8000>]
+#
+# A debugging HTTP proxy that handles both HTTP and HTTPS traffic and outputs
+# request/response information to STDOUT.
+#
+# Author: Mislav Marohnić
+#
+# TODO:
+# - pretty query strings
+# - pretty application/x-www-form-urlencoded data
+# - pretty + syntax-highlighted JSON
+# - present HTTP headers in a more logical order, e.g.
+#   content-type & content-length first
+# - PUT, PATCH, DELETE support
+
+require 'openssl'
+require 'webrick'
+require 'webrick/https'
+require 'webrick/httpproxy'
+
+class DebuggingProxy
+
+  attr_reader :proxy_port, :proxy_server, :ssl_server, :ssl_thread
+  attr_reader :io
+  attr_accessor :cert_info
+
+  def initialize(port)
+    @io = $stdout
+    @proxy_port = port
+    @proxy_server = nil
+  end
+
+  COLORS = {
+    :clear   => "\e[0m",
+    :bold    => "\e[1m",
+    :black   => "\e[30m",
+    :red     => "\e[31m",
+    :green   => "\e[32m",
+    :yellow  => "\e[33m",
+    :blue    => "\e[34m",
+    :magenta => "\e[35m",
+    :cyan    => "\e[36m",
+    :white   => "\e[37m",
+  }
+
+  def c(color)
+    Array(color).map { |colo|
+      COLORS.fetch(colo.to_sym)
+    }.join('')
+  end
+
+  def print(str, color = nil)
+    if color && io.tty?
+      io.print("#{c(color)}#{str}#{c(:clear)}")
+    else
+      io.print(str)
+    end
+  end
+
+  def flush
+    io.flush
+  end
+
+  def silence_header?(key, value = nil)
+    key =~ %r{
+      ^(?:
+        host |
+        (?:proxy-)? connection |
+        date |
+        status | # already shown by response.status_line
+        server |
+        accept-ranges |
+        vary |
+        via
+      )$ | ^x-
+    }ix
+  end
+
+  def dump_headers(hash)
+    hash.each { |key, value|
+      value = value.join(', ') if value.respond_to?(:join)
+      next if silence_header?(key, value)
+
+      print(key, :yellow)
+      print(': ')
+
+      if 'content-type' == key
+        value, extra = value.split(';', 2)
+        print(value, :green)
+        print(";#{extra}") if extra
+      else
+        print(value)
+      end
+      print("\n")
+    }
+    flush
+  end
+
+  def dump_body(req)
+    if req.body && !req.body.empty? && !html?(req)
+      body = req.body
+      body = body + "\n" if body[-1,1] != "\n"
+      print(body)
+      flush
+    end
+  end
+
+  def html?(req)
+    req['content-type'] =~ %r!/(html|xhtml\+xml)$!
+  end
+
+  def record_interaction(req, res)
+    return if req.request_method == 'CONNECT'
+
+    request_line =
+    print("#{req.request_method} ", :blue)
+    print("#{req.request_uri} ", :red)
+    print("HTTP/#{req.http_version}\n")
+    dump_headers(req.header)
+    dump_body(req)
+
+    print(res.status_line, :blue)
+    dump_headers(res.header)
+    dump_body(res)
+    print("\n")
+  end
+
+  class HTTPProxy < WEBrick::HTTPProxyServer
+    def service(req, res)
+      if req.request_method == "CONNECT"
+        do_CONNECT(req, res)
+      elsif req.request_uri.to_s =~ %r!^https?:/!i
+        proxy_service(req, res)
+      else
+        super(req, res)
+      end
+    end
+
+    attr_accessor :local_ssl_host, :local_ssl_port
+
+    # copied almost verbatim from WEBrick::HTTPProxyServer to monkeypatch
+    def do_CONNECT(req, res)
+      proxy_auth(req, res)
+
+      ua = Thread.current[:WEBrickSocket]  # User-Agent
+      raise WEBrick::HTTPStatus::InternalServerError, "[BUG] cannot get socket" unless ua
+
+      # HERE is what I override: Instead to the target host; point the traffic
+      # to the local ssl_server that acts as a man-in-the-middle.
+      # host, port = req.unparsed_uri.split(":", 2)
+      host = local_ssl_host
+      port = local_ssl_port
+
+      begin
+        @logger.debug("CONNECT: upstream proxy is `#{host}:#{port}'.")
+        os = TCPSocket.new(host, port)     # origin server
+        @logger.debug("CONNECT #{host}:#{port}: succeeded")
+        res.status = WEBrick::HTTPStatus::RC_OK
+      rescue => ex
+        @logger.debug("CONNECT #{host}:#{port}: failed `#{ex.message}'")
+        res.set_error(ex)
+        raise WEBrick::HTTPStatus::EOFError
+      ensure
+        if handler = @config[:ProxyContentHandler]
+          handler.call(req, res)
+        end
+        res.send_response(ua)
+        access_log(@config, req, res)
+
+        # Should clear request-line not to send the response twice.
+        # see: HTTPServer#run
+        req.parse(WEBrick::NullReader) rescue nil
+      end
+
+      begin
+        while fds = IO::select([ua, os])
+          if fds[0].member?(ua)
+            buf = ua.sysread(1024);
+            @logger.debug("CONNECT: #{buf.bytesize} byte from User-Agent")
+            os.syswrite(buf)
+          elsif fds[0].member?(os)
+            buf = os.sysread(1024);
+            @logger.debug("CONNECT: #{buf.bytesize} byte from #{host}:#{port}")
+            ua.syswrite(buf)
+          end
+        end
+      rescue => ex
+        os.close
+        @logger.debug("CONNECT #{host}:#{port}: closed")
+      end
+
+      raise WEBrick::HTTPStatus::EOFError
+    end
+
+    # copied almost verbatim from WEBrick::HTTPProxyServer to monkeypatch
+    def perform_proxy_request(req, res)
+      uri = req.request_uri
+      header = setup_proxy_header(req, res)
+      upstream = setup_upstream_proxy_authentication(req, res, header)
+      response = nil
+
+      http = Net::HTTP.new(uri.host, uri.port, upstream.host, upstream.port)
+
+      # HERE is what I add: SSL support
+      if http.use_ssl = (uri.scheme == 'https')
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        http.cert_store = ssl_cert_store
+      end
+
+      http.start do
+        if @config[:ProxyTimeout]
+          ##################################   these issues are
+          http.open_timeout = 30   # secs  #   necessary (maybe bacause
+          http.read_timeout = 60   # secs  #   Ruby's bug, but why?)
+          ##################################
+        end
+        response = yield(http, uri.request_uri, header)
+      end
+
+      # Persistent connection requirements are mysterious for me.
+      # So I will close the connection in every response.
+      res['proxy-connection'] = "close"
+      res['connection'] = "close"
+
+      # Convert Net::HTTP::HTTPResponse to WEBrick::HTTPResponse
+      res.status = response.code.to_i
+      choose_header(response, res)
+      set_cookie(response, res)
+      set_via(res)
+      res.body = response.body
+    end
+
+    def ssl_cert_store
+      cert_store = OpenSSL::X509::Store.new
+      cert_store.set_default_paths
+      cert_store
+    end
+  end
+
+  def logger
+    logio = $stderr
+    WEBrick::BasicLog.new(logio, WEBrick::BasicLog::WARN)
+  end
+
+  def proxy_server_options
+    { :ProxyContentHandler => method(:record_interaction),
+      :Port => proxy_port,
+      :Logger => logger,
+      :AccessLog => [],
+    }
+  end
+
+  def ssl_server_options
+    { :Port => 0,
+      :BindAddress => '127.0.0.1',
+      :ServerType => Thread,
+      :Logger => logger,
+      :AccessLog => [],
+      :SSLEnable => true,
+      # :SSLCertName => [['CN', 'localhost']],
+      # :SSLCertComment => 'DebuggingProxy CA',
+      :SSLPrivateKey => OpenSSL::PKey::RSA.new(cert_info),
+      :SSLCertificate => OpenSSL::X509::Certificate.new(cert_info),
+      :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
+    }
+  end
+
+  def start
+    proxy = HTTPProxy.new(proxy_server_options)
+
+    @ssl_thread = start_ssl_server do |server, host, port|
+      @ssl_server = server
+      proxy.local_ssl_host = host
+      proxy.local_ssl_port = port
+      # have the proxy handle the decoded SSL traffic
+      server.mount_proc("/", &proxy.method(:service))
+    end
+
+    @proxy_server = proxy
+    proxy.start # blocking
+  end
+
+  def start_ssl_server
+    server = WEBrick::HTTPServer.new(ssl_server_options)
+    thread = server.start
+    addr = server.listeners[0].addr
+    yield server, addr[3], addr[1]
+    return thread
+  end
+
+  def shutdown
+    ssl_server.shutdown
+    ssl_thread.join
+    proxy_server.shutdown
+  end
+end
+
+WEBrick::HTTPRequest.class_eval do
+  alias parse_uri_without_path_fix parse_uri
+  def parse_uri(str, scheme = 'https')
+    uri = parse_uri_without_path_fix(str, scheme)
+    # URIs with blank path are valid but WEBrick chokes on them nevertheless
+    # in `normalize_path`.
+    uri.path = '/' if uri.path.empty?
+    return uri
+  end
+end
+
+if $0 == __FILE__
+  port = ARGV[0] || 8000
+  proxy = DebuggingProxy.new(port)
+  proxy.cert_info = DATA.read
+
+  trap('INT') { proxy.shutdown }
+  trap('TERM') { proxy.shutdown }
+
+  warn "proxy server starting on localhost:#{proxy.proxy_port}"
+  proxy.start
+end
+
+__END__
+-----BEGIN CERTIFICATE-----
+MIIBnDCCAQWgAwIBAgIBATANBgkqhkiG9w0BAQUFADAUMRIwEAYDVQQDDAlsb2Nh
+bGhvc3QwHhcNMTMwNzA1MTQ0MzAzWhcNMTQwNzA1MTQ0MzAzWjAUMRIwEAYDVQQD
+DAlsb2NhbGhvc3QwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMkuQhCEljVI
+wlTmZvKeOudYkBTiIxxVB6VgE7WHYnrz+WMztHggNSYyqPiNXqy+7uDdQKxNTG7L
+K7XEcNfdC/+0EWFVuDnC6XS/kkeHd1OyfcdkZKjIupo+H4e/fYEFzKz+MMiJGJgC
+3nk4Pdwq2DUb2a6SZ9ZEj65zZbP8KvaNAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEA
+RnhLr+EhO4+WXfG/aHWWKpla0k+Id+AsosRVixq/Q1ODeaLTQxXFPPAXcWsskK8S
+y/75soozScKTs3Df5QOtuf9wX8+1devv8bkhNnGR5zObw/jF8LjgOg9Un8MnHwWX
+zWqomAOBzpXZSuASihc8OGjKUCCLwPogDg/63VfEYeo=
+-----END CERTIFICATE-----
+-----BEGIN RSA PRIVATE KEY-----
+MIICXgIBAAKBgQDJLkIQhJY1SMJU5mbynjrnWJAU4iMcVQelYBO1h2J68/ljM7R4
+IDUmMqj4jV6svu7g3UCsTUxuyyu1xHDX3Qv/tBFhVbg5wul0v5JHh3dTsn3HZGSo
+yLqaPh+Hv32BBcys/jDIiRiYAt55OD3cKtg1G9mukmfWRI+uc2Wz/Cr2jQIDAQAB
+AoGAQvwI+TD8Rn+UXOpeKrguiqr9RkbJQ/y30AN+bHnIe4HSbopfs4Odzrsdcay4
+cjIcnXhtuTD/mwBA7IOcwvMRtBjz6/hVxAcIi2sNR1SjUk+zvI7zutPSbavWOl83
+pPbOczVtgRfcgIa7GUQf7UAFX8aFuuLhofph2uTTygdDsKECQQD9o1idKLSSQ5dy
+yBphnqygQv8rVLGwB3qz/8wd7P4nNWazpW3z3RbNlMSFpdphGvPy3mZhCcH7hO+u
+6R6GNMeJAkEAyw3bhucnF2r0JYPi9PDAGEteK8FOU+s+EAg4TMdI8bh8t25DuZ4Y
+KKI48qKwtcawdge8hLRJShyNBEC30plx5QJBANAo8R76O0gXBQKEy3H2ocJdecH8
+HmBToxZ7BvBAgk13fDRPvq93cbGDOM5e0Z0EW9WlROy672MXNQad+Bk409ECQQDE
+JeLGckzk5kBqbPi0vEwUK9oQUm+jyT7upcIdCPWB60EuwKlTiVC1D+ALIvWo4wJb
+QiXt22pg2SuvzATGv8uxAkEApjb8pXjHmiMdu2H4tz97askDfEKyAko44TBK65kc
+8RzFYjHklbM3lTk+5kJfSM9uQU5XoP0APZAybWWCk5igLg==
+-----END RSA PRIVATE KEY-----
