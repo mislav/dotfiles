@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# MacBook battery level formatted for tmux status bar
 # Adapted from: https://github.com/Goles/Battery
 
 battery_charge() {
@@ -25,11 +26,14 @@ BATTERY_STATUS=`battery_charge`
 [ -z "$BATTERY_STATUS" ] && exit 1
 
 if [ $BATTERY_STATUS -lt 25 ]; then
-  color=red
+  fg=colour210
+  bg=colour88
 elif [ $BATTERY_STATUS -lt 75 ]; then
-  color=yellow
+  fg=colour228
+  bg=colour94
 else
-  color=green
+  fg=colour8
+  bg=colour234
 fi
 
-echo "#[fg=${color}][${BATTERY_STATUS}%]"
+printf "#[fg=${fg},bg=${bg}] %2d%%" $BATTERY_STATUS
