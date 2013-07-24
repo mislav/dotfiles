@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Like `tmux select-pane`, but if Vim is running in the current pane it sends
 # a `<C-h/j/k/l>` keystroke to Vim instead.
 set -e

@@ -25,7 +25,7 @@ add_window() {
 }
 
 new_session() {
-  cd $3 &&
+  cd "$3" &&
   tmux new-session -d -s "$1" -n "$2" $4
 }
 
@@ -40,7 +40,7 @@ restore() {
         add_window "$session_name" "$window_name" "$dir"
       else
         new_session "$session_name" "$window_name" "$dir" "$dimensions"
-        count=$(( $count + 1 ))
+        count=$(( count + 1 ))
       fi
     fi
   done < ~/.tmux-session
