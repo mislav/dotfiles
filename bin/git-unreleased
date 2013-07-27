@@ -9,7 +9,17 @@ if [ $num_libfiles -gt 0 ]; then
   paths="bin lib libexec"
 fi
 
-desc="$(git describe --tags HEAD)"
+format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar)%Creset'
+
+show_log() {
+  git log --graph --format="$format" ${1:+${1}..} -- $paths
+}
+
+desc="$(git describe --tags HEAD 2>/dev/null)" || {
+  echo "no releases exist; showing all changes"
+  show_log
+  exit
+}
 
 # check for "<tag>-<num_commits>-<sha>" format
 if [[ "$desc" == *-*-g* ]]; then
@@ -22,10 +32,8 @@ else
 fi
 
 if [ $num_commits -gt 0 ]; then
-  format='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar)%Creset'
-
   echo "${num_commits} commits since ${tag}"
-  git log --graph --format="$format" "${tag}.." -- $paths
+  show_log "$tag"
 else
   echo "no commits since ${tag}"
 fi
