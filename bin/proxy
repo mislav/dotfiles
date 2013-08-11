@@ -9,15 +9,23 @@
 # TODO:
 # - pretty query strings
 # - pretty application/x-www-form-urlencoded data
-# - pretty + syntax-highlighted JSON
 # - present HTTP headers in a more logical order, e.g.
 #   content-type & content-length first
-# - PUT, PATCH, DELETE support
+# - possible to simplify CONNECT?
+#   https://github.com/23tux/vcr_proxy/blob/master/vcr_proxy.rb
 
 require 'openssl'
 require 'webrick'
 require 'webrick/https'
 require 'webrick/httpproxy'
+require 'zlib'
+require 'stringio'
+
+begin
+  require 'json'
+rescue LoadError
+  warn "Warning: #{$!.message}. Will not be able to prettify JSON responses."
+end
 
 class DebuggingProxy
 
@@ -43,6 +51,8 @@ class DebuggingProxy
     :cyan    => "\e[36m",
     :white   => "\e[37m",
   }
+
+  PYGMENTIZE = `which pygmentize 2>/dev/null`.chomp
 
   def c(color)
     Array(color).map { |colo|
@@ -100,6 +110,8 @@ class DebuggingProxy
   def dump_body(req)
     if req.body && !req.body.empty? && !html?(req)
       body = req.body
+      body = unzip(body) if gzipped?(req)
+      body = pretty_json(body) if json?(req)
       body = body + "\n" if body[-1,1] != "\n"
       print(body)
       flush
@@ -107,13 +119,44 @@ class DebuggingProxy
   end
 
   def html?(req)
-    req['content-type'] =~ %r!/(html|xhtml\+xml)$!
+    req['content-type'] =~ %r!/(html|xhtml\+xml)($|;)!
+  end
+
+  def json?(req)
+    req['content-type'] =~ %r![/+]json($|;)!
+  end
+
+  def gzipped?(req)
+    req['content-encoding'] == 'gzip'
+  end
+
+  def unzip(body)
+    Zlib::GzipReader.new(StringIO.new(body), :encoding => 'ASCII-8BIT').read
+  end
+
+  def pretty_json(body)
+    body = JSON.pretty_generate(JSON.parse(body)) if defined?(JSON)
+    body = syntax_highlight(body, 'json') if io.tty?
+    body
+  end
+
+  def syntax_highlight(body, type)
+    if !PYGMENTIZE.empty?
+      formatter = 'terminal'
+      formatter += '256' if ENV['TERM'].include?('256color')
+      style = 'monokai'
+      File.popen("#{PYGMENTIZE} -l #{type} -f #{formatter} -O style=#{style}", 'r+') do |py|
+        py.write(body)
+        py.close_write
+        body = py.read
+      end
+    end
+    body
   end
 
   def record_interaction(req, res)
     return if req.request_method == 'CONNECT'
 
-    request_line =
     print("#{req.request_method} ", :blue)
     print("#{req.request_uri} ", :red)
     print("HTTP/#{req.http_version}\n")
@@ -193,6 +236,24 @@ class DebuggingProxy
       raise WEBrick::HTTPStatus::EOFError
     end
 
+    SUPPORTED_METHODS = %w[GET HEAD POST PUT PATCH DELETE]
+
+    SUPPORTED_METHODS.each do |http_method|
+      class_eval(<<-RUBY, __FILE__, __LINE__ + 1)
+        def do_#{http_method}(req, res)
+          perform_proxy_request(req, res) do |http, path, header|
+            request = Net::HTTPGenericRequest.new("#{http_method}", !!req.body, #{http_method != 'HEAD'}, path, header)
+            request.body = req.body.to_s
+            http.request(request)
+          end
+        end
+      RUBY
+    end
+
+    def do_OPTIONS(req, res)
+      res['allow'] = (SUPPORTED_METHODS + %w[OPTIONS CONNECT]).join(',')
+    end
+
     # copied almost verbatim from WEBrick::HTTPProxyServer to monkeypatch
     def perform_proxy_request(req, res)
       uri = req.request_uri
@@ -203,7 +264,7 @@ class DebuggingProxy
       http = Net::HTTP.new(uri.host, uri.port, upstream.host, upstream.port)
 
       # HERE is what I add: SSL support
-      if http.use_ssl = (uri.scheme == 'https')
+      if http.use_ssl = (uri.scheme == 'https' || uri.port == 443)
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         http.cert_store = ssl_cert_store
       end
@@ -235,6 +296,22 @@ class DebuggingProxy
       cert_store = OpenSSL::X509::Store.new
       cert_store.set_default_paths
       cert_store
+    end
+  end
+
+  class ProcHandler < WEBrick::HTTPServlet::ProcHandler
+    alias do_PUT do_GET
+    alias do_PATCH do_GET
+    alias do_DELETE do_GET
+  end
+
+  class HTTPServer < WEBrick::HTTPServer
+    def do_OPTIONS(req, res)
+      res['allow'] = (HTTPProxy::SUPPORTED_METHODS + %w[OPTIONS CONNECT]).join(',')
+    end
+
+    def mount_proc(dir)
+      mount(dir, ProcHandler.new(Proc.new))
     end
   end
 
@@ -282,7 +359,7 @@ class DebuggingProxy
   end
 
   def start_ssl_server
-    server = WEBrick::HTTPServer.new(ssl_server_options)
+    server = HTTPServer.new(ssl_server_options)
     thread = server.start
     addr = server.listeners[0].addr
     yield server, addr[3], addr[1]
