@@ -20,6 +20,7 @@ require 'webrick/https'
 require 'webrick/httpproxy'
 require 'zlib'
 require 'stringio'
+require 'net/https'
 
 begin
   require 'json'
@@ -180,6 +181,36 @@ class DebuggingProxy
       end
     end
 
+    # Ruby 1.8 compatibility; copied verbatim from Ruby 2.0
+    def proxy_service(req, res)
+      # Proxy Authentication
+      proxy_auth(req, res)
+
+      begin
+        self.send("do_#{req.request_method}", req, res)
+      rescue NoMethodError
+        raise WEBrick::HTTPStatus::MethodNotAllowed,
+          "unsupported method `#{req.request_method}'."
+      rescue => err
+        logger.debug("#{err.class}: #{err.message}")
+        raise WEBrick::HTTPStatus::ServiceUnavailable, err.message
+      end
+
+      # Process contents
+      if handler = @config[:ProxyContentHandler]
+        handler.call(req, res)
+      end
+    end
+
+    # Ruby 1.8 compatibility; copied verbatim from Ruby 2.0
+    def setup_proxy_header(req, res)
+      # Choose header fields to transfer
+      header = Hash.new
+      choose_header(req, header)
+      set_via(header)
+      return header
+    end
+
     attr_accessor :local_ssl_host, :local_ssl_port
 
     # copied almost verbatim from WEBrick::HTTPProxyServer to monkeypatch
@@ -258,10 +289,10 @@ class DebuggingProxy
     def perform_proxy_request(req, res)
       uri = req.request_uri
       header = setup_proxy_header(req, res)
-      upstream = setup_upstream_proxy_authentication(req, res, header)
+      # upstream = setup_upstream_proxy_authentication(req, res, header)
       response = nil
 
-      http = Net::HTTP.new(uri.host, uri.port, upstream.host, upstream.port)
+      http = Net::HTTP.new(uri.host, uri.port) # upstream.host, upstream.port)
 
       # HERE is what I add: SSL support
       if http.use_ssl = (uri.scheme == 'https' || uri.port == 443)
