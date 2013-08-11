@@ -1,5 +1,5 @@
 #!/usr/bin/env phantomjs
-// :vi:ft=javascript:
+// vi:ft=javascript
 var page = require('webpage').create(),
     system = require('system'),
     address, output, size;
