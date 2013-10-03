@@ -19,9 +19,8 @@ if [ -d $ZSH ]; then
 
   # completion:  tweaks tab completion
   # history:     large size, ignore dups, share history
-  # termsupport: screen, iterm, Terminal.app title
   # terminalapp: set Terminal.app resume directory
-  for config_file (lib/completion lib/history lib/termsupport plugins/terminalapp/terminalapp.plugin); do
+  for config_file (lib/completion lib/history plugins/terminalapp/terminalapp.plugin); do
     source $ZSH/$config_file.zsh
   done
 
