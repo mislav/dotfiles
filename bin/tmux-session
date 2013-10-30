@@ -35,7 +35,7 @@ restore() {
   local dimensions="$(terminal_size)"
 
   while IFS=$'\t' read session_name window_name dir; do
-    if ! [[ $window_name = "log" || $window_name = "man" ]]; then
+    if [[ -d "$dir" && $window_name != "log" && $window_name != "man" ]]; then
       if session_exists "$session_name"; then
         add_window "$session_name" "$window_name" "$dir"
       else
