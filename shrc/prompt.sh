@@ -33,7 +33,10 @@ elif [[ -n $ZSH_VERSION ]]; then
   # if in a git repo, show dirty indicator + git branch
   git_custom_status() {
     local git_where="$(parse_git_branch)"
-    [ -n "$git_where" ] && echo "$(parse_git_dirty)$GIT_PROMPT_PREFIX${git_where#(refs/heads/|tags/)}$GIT_PROMPT_SUFFIX"
+    if [ -n "$git_where" ]; then
+      git_where="${git_where#(refs/heads/|tags/)}"
+      echo "${GIT_PROMPT_PREFIX}${git_where}$GIT_PROMPT_SUFFIX"
+    fi
   }
 
   # show current rbenv version if different from rbenv global
@@ -43,7 +46,7 @@ elif [[ -n $ZSH_VERSION ]]; then
   }
 
   # put fancy stuff on the right
-  if which rbenv &> /dev/null; then
+  if false && which rbenv &> /dev/null; then
     RPS1='$(git_custom_status)%{$fg[red]%}$(rbenv_version_status)%{$reset_color%} $EPS1'
   else
     RPS1='$(git_custom_status) $EPS1'
