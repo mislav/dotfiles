@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Usage: merge [<BRANCH>]
+#
+# Sophisticated git merge with integrated CI check and automatic cleanup upon
+# completion.
+#
+# - Fast-forwards BRANCH to latest version (if applicable)
+# - Checks if BRANCH passed CI
+# - Fast-forwards master to latest version
+# - Merges BRANCH into master
+# - Pushes master upstream
+# - Deletes BRANCH both locally and on its remote.
+#
+# Depends on: hub v1.10.6
+
+set -e
+
+branch="$1"
+upstream_name=origin
+upstream_branch=""
+
+if [ -z "$branch" ]; then
+  branch="$(git symbolic-ref -q HEAD)"
+  branch="${branch#refs/heads/}"
+fi
+
+symbolic_full_name() {
+  local output
+  if output="$(git rev-parse --symbolic-full-name "$@" 2>/dev/null)"; then
+    echo "${output#refs/remotes/}"
+  else
+    return 1
+  fi
+}
+
+checkout_latest() {
+  git checkout -q "$1" && git pull --ff-only
+}
+
+if master_name="$(symbolic_full_name "$upstream_name")"; then
+  master_name="${master_name#*/}"
+else
+  master_name=master
+fi
+
+if [ "$branch" = "$master_name" ]; then
+  echo "Won't merge master branch into itself!" >&2
+  exit 1
+fi
+
+if upstream="$(symbolic_full_name "${branch}@{u}")"; then
+  upstream_remote="${upstream%%/*}"
+  upstream_branch="${upstream#*/}"
+fi
+
+if [ -n "$upstream_branch" ]; then
+  checkout_latest "$branch"
+fi
+
+if ! output="$(hub ci-status "$branch" 2>&1)"; then
+  echo "hub ci-status: $output" >&2
+  exit 1
+fi
+
+checkout_latest "$master_name"
+git merge --no-ff "$branch" -m "Merge branch '${upstream_branch:-$branch}'"
+git push "$upstream_name" "$master_name"
+
+git branch -d "$branch"
+
+if [ -n "$upstream_branch" ]; then
+  git branch -dr "${upstream_remote}/${upstream_branch}"
+  git push "$upstream_remote" --delete "$upstream_branch"
+fi
