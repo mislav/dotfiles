@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require 'rbconfig'
+pattern = Regexp.new(ARGV[0], 'i') if ARGV.any?
+
+RbConfig::CONFIG.each do |key, value|
+  if !pattern || (key =~ pattern || value =~ pattern)
+    puts "%s: %s" % [key, value]
+  end
+end
