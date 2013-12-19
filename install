@@ -8,7 +8,7 @@ for file in "$here"/*; do
   [[ $name = bin ]] && dotname="$name" || dotname=".${name}"
 
   if ! [[ "install readme" =~ $name || $name =~ ".plist" || -e ~/$dotname || -d $file/.git ]]; then
-    ln -sfhv ${file#$HOME/} "${HOME}/${dotname}"
+    ln -sfnv ${file#$HOME/} "${HOME}/${dotname}"
   fi
 done
 
@@ -19,7 +19,7 @@ while read file; do
   if ! [[ -e "${here}/${file}" ]]; then
     echo "not found: ${file}" >&2
   elif ! [[ -e $fullbin ]]; then
-    ln -sfhv "../${file}" "$fullbin"
+    ln -sfnv "../${file}" "$fullbin"
     echo "$bin" >> "${here}/.git/info/exclude"
   fi
 done < "${here}/.external"
