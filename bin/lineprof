@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -n
+#!/usr/bin/ruby --disable-gems -n
 # Annotates each line of input with the number of milliseconds elapsed since
 # the last line. Useful for figuring out slow points of output-producing programs.
 
