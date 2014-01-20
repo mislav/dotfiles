@@ -8,6 +8,8 @@ require 'json'
 require 'open-uri'
 require 'fileutils'
 
+in_color = ARGV.detect {|a| a =~ /^--(no-)?color$/ } ? !$1 : $stdout.tty?
+
 fold = ->(string) {
   string.gsub(/travis_fold:start:.+?\r.*?travis_fold:end:.+?\r/m, '')
 }
@@ -38,14 +40,18 @@ else
   abort "aborted: latest commit tested by Travis doesn't match current" if job_sha != sha
 
   logs = job_ids.map { |job|
-    open("http://s3.amazonaws.com/archive.travis-ci.org/jobs/#{job}/log.txt").read
+    begin
+      open("http://s3.amazonaws.com/archive.travis-ci.org/jobs/#{job}/log.txt").read
+    rescue OpenURI::HTTPError
+      abort "Error fetching log for job ##{job}; maybe the build hasn't completed yet?"
+    end
   }.join("\n\n")
 
   FileUtils.mkdir_p(File.dirname(cache))
   File.open(cache, 'w') {|c| c << logs }
 end
 
-if $stdout.tty?
+if in_color
   puts colorized.(fold.(logs))
 else
   puts clean.(fold.(logs))
