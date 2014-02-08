@@ -1,25 +1,38 @@
-#!/usr/bin/env ruby -wKU
-## Converts ANSI escape sequences for terminal colors to HTML.
-# Synopsis:
-#   ansi2html [-w] [--css]
-# 
-# Options:
-#   -w    : wraps the output in PRE tags 
-#   -css  : includes CSS style declaration
+#!/usr/bin/env ruby
+# Usage: ansi2html [-w] [--css]
 #
-# Example:
+#   -w    : wrap HTML output in PRE tags
+#   -css  : include CSS styles
+#
+# Convert terminal color ANSI escape sequences to HTML.
+#
+# Examples:
+#
 #   $ git log --oneline --decorate -10 --color | ansi2html
-# 
-# Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
-# 
-# Try it out:
+#
 #   $ ruby -e '30.upto(37) {|n| puts "\e[#{n}mHi \e[1;#{n}mho\e[m" }' | ansi2html
 #
+# Author: Mislav Marohnić
+
 require 'cgi'
+
+if ARGV.include?('-h') || ARGV.include?('--help')
+  File.open(__FILE__, 'r') do |source|
+    source.each do |line|
+      case line
+      when /^#!/ then next
+      when /^#/ then puts line.sub(/^# ?/, '')
+      else break
+      end
+    end
+  end
+  exit 0
+end
 
 wrap = ARGV.delete('-w')
 css = ARGV.delete('--css')
 data = ARGF.read
+out = $stdout
 
 COLORS = [
   %w[black black #818383],
@@ -34,6 +47,7 @@ COLORS = [
 
 def classnames(code)
   codes = code.split(';').map { |c| c.to_i }
+  codes.delete(0)
   if color_code = codes.find { |c| c.between?(30, 37) }
     codes.delete(color_code)
     codes << COLORS[color_code - 30][0]
@@ -44,32 +58,23 @@ end
 
 open = false
 
+out << "<pre class='ansi'>" if wrap
 # replace escape sequences with SPAN tags
-out = CGI.escapeHTML(data).gsub(/\e\[ ([\d;]*)m /x) {
+out << CGI.escapeHTML(data.rstrip).gsub(/\e\[ ([\d;]*)m /x) {
   opentag = $1.empty?? nil : "<span class='#{classnames($1)}'>"
   closetag = open ? '</span>' : nil
   open = !!opentag
   "#{closetag}#{opentag}"
 }
+out << "</pre>" if wrap
+out << "\n"
 
-# optional: wrap HTML in PRE tags
-out = "<pre class='ansi'>#{out}</pre>" if wrap
-
-# optional: append CSS styles to output
 if css
-  rules = COLORS.map { |name, normal, bright|
-    [ "pre.ansi .ansi-#{name} { color: #{normal}; }",
-      "pre.ansi .ansi-#{name}.ansi-bright { color: #{bright}; }" ]
-  }.flatten
-  
-  out = <<-CSS
-#{out}
-
-<style type="text/css">
-  pre.ansi { color: #DEDFE1; background-color: #010101; }
-  #{rules.join("\n  ")}
-</style>
-CSS
+  out.puts "\n<style type=\"text/css\">"
+  out.puts "  pre.ansi { color: #DEDFE1; background-color: #010101; }"
+  COLORS.map do |name, normal, bright|
+    out.puts "  pre.ansi .ansi-#{name} { color: #{normal}; }"
+    out.puts "  pre.ansi .ansi-#{name}.ansi-bright { color: #{bright}; }"
+  end
+  out.puts "</style>"
 end
-
-puts out
