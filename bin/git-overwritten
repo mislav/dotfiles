@@ -110,7 +110,7 @@ git diff "${base}...${head}" --diff-filter=DM --no-prefix -w -U0 | grep -v '^+' 
   while IFS=$'\t' read time sha author msg; do
     date -r $time "+%Y-%m-%d" | tr -d $'\n'
     printf ' '
-    color 33 "${sha:1:7}"
+    color 33 "${sha:0:7}"
     printf '  '
     color 32 "$(printf "%${name_length}s" "$author")"
     printf ': '
