@@ -59,6 +59,9 @@ color() {
 }
 
 git diff "${base}...${head}" --diff-filter=DM --no-prefix -w -U0 | grep -v '^+' | awk '
+  function print_range() {
+    printf "-L %d,%d -- %s\n", start, stop, file
+  }
   /^--- / {
     sub(/^--- /, "")
     file = $0
@@ -70,13 +73,16 @@ git diff "${base}...${head}" --diff-filter=DM --no-prefix -w -U0 | grep -v '^+' 
     next
   }
   start {
-    printf "-L %d,%d -- %s\n", start, stop, file
+    print_range()
     start = 0
   }
   /^@@ / {
     sub(/^-/, "", $2)
     diffstart = int($2)
     start = 0
+  }
+  END {
+    if (start) print_range()
   }
 ' | xargs -L1 git blame --line-porcelain "$base" | awk -v OFS=$'\t' '
   BEGIN { num_lines = name_length = 0 }
