@@ -3,6 +3,7 @@ if [ -r ~/.profile ]; then
   source ~/.profile
 fi
 
+export CLICOLOR=1
 export HISTCONTROL=ignoredups
 export EDITOR=vim
 
