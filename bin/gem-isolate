@@ -1,0 +1,45 @@
+#!/bin/bash
+# Usage: [sudo] gem-isolate <gem-name>
+#
+# Installs the gem in PREFIX (default: `/usr/local`) by using the Ruby version
+# found in `/usr/bin/ruby` but in a location isolated from other system gems.
+# The executable will end up in `$PREFIX/bin/<gem-name>`.
+set -e
+
+gem_name="${1}"
+exe_name="${gem_name}"
+
+case "$gem_name" in
+--help | -h )
+  sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
+  exit 0
+  ;;
+'' )
+  "$0" --help | head -1 >&2
+  exit 1
+  ;;
+esac
+
+shift 1
+
+prefix="${PREFIX:-/usr/local}"
+ruby=/usr/bin/ruby
+gem=/usr/bin/gem
+
+bin_file="${prefix}/bin/${exe_name}"
+gem_home="${prefix}/gems/${gem_name}"
+
+rm -rf "$gem_home"
+
+ARCHFLAGS='-Wno-error=unused-command-line-argument-hard-error-in-future' \
+  GEM_HOME="$gem_home" GEM_PATH="$gem_home" \
+  "$gem" install --no-rdoc --no-ri "$gem_name" "$@"
+
+cat > "$bin_file" <<RUBY
+#!$BASH
+export GEM_HOME="$gem_home"
+export GEM_PATH="\$GEM_HOME"
+exec -a "$exe_name" "$ruby" "\${GEM_HOME}/bin/${exe_name}" "\$@"
+RUBY
+
+chmod +x "$bin_file"
