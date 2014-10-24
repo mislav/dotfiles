@@ -63,7 +63,7 @@ if ! output="$(hub ci-status "$branch" 2>&1)"; then
 fi
 
 checkout_latest "$master_name"
-git merge --no-ff "$branch" -m "Merge branch '${upstream_branch:-$branch}'"
+git merge --no-ff "$branch" -m "Merge branch '${upstream_branch:-$branch}'" --edit
 git push "$upstream_name" "$master_name"
 
 git branch -d "$branch"
