@@ -23,8 +23,8 @@ esac
 shift 1
 
 prefix="${PREFIX:-/usr/local}"
-ruby=/usr/bin/ruby
-gem=/usr/bin/gem
+ruby="${RUBY:-/usr/bin/ruby}"
+gem="${ruby%/*}/gem"
 
 bin_file="${prefix}/bin/${exe_name}"
 gem_home="${prefix}/gems/${gem_name}"
