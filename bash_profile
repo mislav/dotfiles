@@ -17,11 +17,6 @@ if [ -r "$bash_completion" ]; then
 fi
 unset bash_completion
 
-# Set terminal title
-title() {
-  echo -n -e "\033]0;${@}\007"
-}
-
 _git_prompt() {
   local ref="$(command git symbolic-ref -q HEAD 2>/dev/null)"
   if [ -n "$ref" ]; then
