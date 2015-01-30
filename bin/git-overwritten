@@ -20,6 +20,7 @@ set -e
 unset colorize
 unset head
 unset base
+unset diff_type
 
 abort() {
   "$0" --help | head -1 >&2
@@ -30,6 +31,8 @@ while [ "$#" -gt 0 ]; do
   case "$1" in
   --color ) colorize=1 ;;
   --no-color ) colorize= ;;
+  --staged ) diff_type='--staged' ;;
+  --unstaged ) diff_type= ;;
   -h | --help )
     sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
     exit 0
@@ -45,8 +48,13 @@ while [ "$#" -gt 0 ]; do
   shift 1
 done
 
-head="${head:-HEAD}"
-base="${base:-origin}"
+if [ "${diff_type-no}" = "no" ]; then
+  head="${head:-HEAD}"
+  base="${base:-origin}"
+else
+  head=
+  base=HEAD
+fi
 
 [ -t 1 ] && colorize="${colorize-1}"
 
@@ -58,7 +66,7 @@ color() {
   fi
 }
 
-git diff "${base}...${head}" --diff-filter=DM --no-prefix -w -U0 | grep -v '^+' | awk '
+git diff ${diff_type-"${base}...${head}"} --diff-filter=DM --no-prefix -w -U0 | grep -v '^+' | awk '
   function print_range() {
     printf "-L %d,%d -- %s\n", start, stop, file
   }
