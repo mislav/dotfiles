@@ -4,11 +4,14 @@
 # Sophisticated git merge with integrated CI check and automatic cleanup upon
 # completion.
 #
+# When BRANCH is specified, merge it into the current branch. When blank, merge
+# current branch into the main branch (default: master).
+#
 # - Fast-forwards BRANCH to latest version (if applicable)
 # - Checks if BRANCH passed CI
-# - Fast-forwards master to latest version
-# - Merges BRANCH into master
-# - Pushes master upstream
+# - Fast-forwards target branch to latest version
+# - Merges BRANCH into target branch
+# - Pushes target branch upstream
 # - Deletes BRANCH both locally and on its remote.
 #
 # Depends on: hub v1.10.6
@@ -19,11 +22,6 @@ branch="$1"
 upstream_name=origin
 upstream_branch=""
 
-if [ -z "$branch" ]; then
-  branch="$(git symbolic-ref -q HEAD)"
-  branch="${branch#refs/heads/}"
-fi
-
 symbolic_full_name() {
   local output
   if output="$(git rev-parse --symbolic-full-name "$@" 2>/dev/null)"; then
@@ -33,18 +31,27 @@ symbolic_full_name() {
   fi
 }
 
-checkout_latest() {
-  git checkout -q "$1" && git pull --ff-only
-}
-
-if master_name="$(symbolic_full_name "$upstream_name")"; then
-  master_name="${master_name#*/}"
+current_branch="$(git symbolic-ref -q HEAD)"
+current_branch="${current_branch#refs/heads/}"
+if main_branch="$(symbolic_full_name "$upstream_name")"; then
+  main_branch="${main_branch#*/}"
 else
-  master_name=master
+  main_branch=master
 fi
 
-if [ "$branch" = "$master_name" ]; then
-  echo "Won't merge master branch into itself!" >&2
+# previously checked-out branch
+[ "$branch" = "-" ] && branch="$(symbolic_full_name '@{-1}')"
+
+if [ -n "$branch" ]; then
+  branch="${branch#refs/heads/}"
+  target_branch="$current_branch"
+else
+  branch="$current_branch"
+  target_branch="$main_branch"
+fi
+
+if [ "$branch" = "$target_branch" ]; then
+  echo "Refusing to merge '$branch' into itself!" >&2
   exit 1
 fi
 
@@ -54,7 +61,7 @@ if upstream="$(symbolic_full_name "${branch}@{u}")"; then
 fi
 
 if [ -n "$upstream_branch" ]; then
-  checkout_latest "$branch"
+  git fetch -q "$upstream_remote" "$upstream_branch"
 fi
 
 if ! output="$(hub ci-status "$branch" 2>&1)"; then
@@ -62,9 +69,14 @@ if ! output="$(hub ci-status "$branch" 2>&1)"; then
   exit 1
 fi
 
-checkout_latest "$master_name"
-git merge --no-ff "$branch" -m "Merge branch '${upstream_branch:-$branch}'" --edit
-git push "$upstream_name" "$master_name"
+git fetch -q "$upstream_name" "$target_branch"
+git checkout -q "$target_branch"
+git merge --ff-only @{u}
+
+into=""
+[ "$target_branch" = "$main_branch" ] || into=" into $target_branch"
+git merge --no-ff "$branch" -m "Merge branch '${upstream_branch:-$branch}'${into}" --edit
+git push "$upstream_name" "$target_branch"
 
 git branch -d "$branch"
 
