@@ -1,31 +1,13 @@
 [user]
-	name = Mislav Marohnić
-	email = mislav.marohnic@gmail.com
-[apply]
-	whitespace = nowarn
-[alias]
-	nb = checkout -b
-	lc = log @{1}.. --stat --no-merges
-	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ar)%Creset' --abbrev-commit --date=relative
-	ff = merge --ff-only @{u}
+name = Mislav Marohnić
+email = mislav.marohnic@gmail.com
+
 [color]
-	diff = auto
-	status = auto
-	branch = auto
-[core]
-	excludesfile = /Users/mislav/.gitignore
-	quotepath = false
-	whitespace = -blank-at-eol
-[mirror]
-	summary = true
-[branch]
-	autosetupmerge = true
-	autosetuprebase = always
+ui = true
+
 [push]
-	default = tracking
-[rebase]
-	autosquash = true
-[web]
-  browser = open
-[init]
-	templatedir = ~/.git-template
+default = simple
+
+[alias]
+lg = log --graph --oneline --decorate
+st = status -sb
