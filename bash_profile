@@ -10,6 +10,7 @@ export EDITOR=vim
 PATH=~/bin:"$PATH"
 PATH=bin:"$PATH"
 export PATH
+export PATH="$(consolidate-path "$PATH")"
 
 bash_completion="$(brew --prefix 2>/dev/null)/etc/bash_completion"
 if [ -r "$bash_completion" ]; then

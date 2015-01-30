@@ -2,7 +2,7 @@
 # Remove duplicate entries from PATH
 
 typeset -a paths result
-paths=($path)
+IFS=: paths=($1)
 
 while [[ ${#paths} -gt 0 ]]; do
   p="${paths[1]}"
