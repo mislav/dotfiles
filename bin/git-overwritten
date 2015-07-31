@@ -22,6 +22,9 @@ unset head
 unset base
 unset diff_type
 
+# Figure out what argument to use for date as GNU & BSD `date`s are different
+[[ $(date -r123 '+%s' 2>/dev/null) -eq 123 ]] && DATEARG='-r' || DATEARG='-d@'
+
 abort() {
   "$0" --help | head -1 >&2
   exit 1
@@ -116,7 +119,7 @@ git diff ${diff_type-"${base}...${head}"} --diff-filter=DM --no-prefix -w -U0 | 
   fi
 
   while IFS=$'\t' read time sha author msg; do
-    date -r $time "+%Y-%m-%d" | tr -d $'\n'
+    date "${DATEARG}${time}" '+%F' | tr -d $'\n'
     printf ' '
     color 33 "${sha:0:7}"
     printf '  '
