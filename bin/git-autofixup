@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Usage: git autofixup
+#
+# Commits the staged change as a fixup for the last commit that touched the
+# changed line. Useful for preparing for a `git rebase --autosquash`.
+set -e
+
+git diff --no-prefix --cached -U0 | awk '
+  /^--- / { print $2 }
+  /^@@ /  { print $2 * -1; exit }
+' | xargs | {
+  read filename lineno
+  sha="$(git blame HEAD "$filename" -L "${lineno},+1" | awk '{ print $1 }')"
+  git commit --fixup "$sha"
+}

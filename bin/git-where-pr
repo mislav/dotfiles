@@ -1,0 +1,27 @@
+#!/bin/bash
+# Usage: git where-pr <ref>
+#
+# Opens the pull request where the commit originated
+set -e
+
+[[ -z $1 ]] && abort=1 || abort=0
+
+if [[ $abort -gt 0 || $1 = "-h" || $1 = "--help" ]]; then
+  sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0" >&$((abort+1))
+  exit $abort
+fi
+
+pull_id="$(git log --merges --ancestry-path --oneline "${1}.." | awk '
+  /Merge pull request #/ { sub("#", "", $5); print $5 }
+' | tail -1)"
+
+if [ -n "$pull_id" ]; then
+  url="$(git remote -v | awk '
+    /^origin\t/ { print $2 }
+  ' | head -1 | sed -E 's!(git@github\.com:|git://github\.com/)!https://github.com/!')"
+  url="${url%.git}"
+  open "${url}/pull/${pull_id}"
+else
+  echo "Could not find pull request" >&2
+  exit 1
+fi

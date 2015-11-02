@@ -1,0 +1,27 @@
+#!/bin/bash
+# Usage: git branches-that-touch <path>
+#
+# Searches:
+# - branches that touch files under `<path>`,
+# - that are remote and unmerged,
+# - whose latest commit falls within the past 6 months,
+# - whose name doesn't start with "enterprise-".
+set -e
+
+age_treshold="$(date -v-6m +%s)"
+base="origin/master"
+
+trap 'echo processing $branch >&2' INFO
+
+for branch in `git branch -r --no-merged "$base"`; do
+  name="${branch#*/}"
+  [[ $name != enterprise-* ]] || continue
+
+  touched="$(git log -1 --format=%cd --date=raw "$branch" | awk '{print $1}')"
+  [ "$touched" -gt "$age_treshold" ] || continue
+
+  if git diff "${base}...${branch}" --name-only | grep -q "$1"; then
+    echo -n "${branch} by "
+    git log "${base}..${branch}" --first-parent --format=%an | sort | uniq -c | sort -rn | head -1
+  fi
+done
