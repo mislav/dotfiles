@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
+if [ "$1" = "--stat" ]; then
+  mode="--stat"
+  shift 1
+else
+  mode="-s"
+fi
+
 while read action sha other; do
   if [ -n "$action" ]; then
     echo -n "$action "
-    git show $sha --format="%h [%an] %s" -s
+    git show $sha --format="%h [%an] %s" "$mode"
   else
     echo
   fi
