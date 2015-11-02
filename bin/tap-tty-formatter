@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -e
+
+header_pattern='[0-9]+\.\.[0-9]+'
+IFS= read -r header
+
+if [[ "$header" =~ $header_pattern ]]; then
+  count="${header:3}"
+  index=0
+  failures=0
+  count_column_width=$(( ${#count} * 2 + 2 ))
+else
+  # If the first line isn't a TAP plan, print it and pass the rest through
+  printf "%s\n" "$header"
+  exec cat
+fi
+
+update_screen_width() {
+  screen_width="$(tput cols)"
+  count_column_left=$(( $screen_width - $count_column_width ))
+}
+
+trap update_screen_width WINCH
+update_screen_width
+
+# begin() {
+#   go_to_column 0
+#   printf_with_truncation $(( $count_column_left - 1 )) "   %s" "$1"
+#   clear_to_end_of_line
+#   go_to_column $count_column_left
+#   printf "%${#count}s/${count}" "$index"
+#   go_to_column 0
+# }
+
+pass() {
+  printf "  %${#count}s/${count}" "$index"
+  clear_to_end_of_line
+  go_to_column 0
+}
+
+fail() {
+  go_to_column 0
+  set_color 1 bold
+  printf "FAILED: %s" "$1"
+  advance
+}
+
+log() {
+  set_color 1
+  printf "  %s\n" "$1"
+  clear_color
+}
+
+summary() {
+  clear_to_end_of_line
+  printf "%d test%s, %d failure%s\n" \
+    "$count" "$(plural "$count")" \
+    "$failures" "$(plural "$failures")"
+}
+
+printf_with_truncation() {
+  local width="$1"
+  shift
+  local string="$(printf "$@")"
+
+  if [ "${#string}" -gt "$width" ]; then
+    printf "%s..." "${string:0:$(( $width - 4 ))}"
+  else
+    printf "%s" "$string"
+  fi
+}
+
+strip_leading_number() {
+  local num="${1%% *}"
+  if [ "$num" -gt 0 ] 2>/dev/null; then
+    echo "${1:${#num}+1}"
+  else
+    echo "$1"
+  fi
+}
+
+go_to_column() {
+  local column="$1"
+  printf "\x1B[%dG" $(( $column + 1 ))
+}
+
+clear_to_end_of_line() {
+  printf "\x1B[K"
+}
+
+advance() {
+  clear_to_end_of_line
+  echo
+  clear_color
+}
+
+set_color() {
+  local color="$1"
+  local weight="$2"
+  printf "\x1B[%d;%dm" $(( 30 + $color )) "$( [ "$weight" = "bold" ] && echo 1 || echo 22 )"
+}
+
+clear_color() {
+  printf "\x1B[0m"
+}
+
+plural() {
+  [ "$1" -eq 1 ] || echo "s"
+}
+
+while IFS= read -r line; do
+  case "$line" in
+  "ok "* )
+    name="$(strip_leading_number "${line:3}")"
+    index=$(( index + 1 ))
+    pass "$name"
+    ;;
+  "not ok "* )
+    name="$(strip_leading_number "${line:7}")"
+    index=$(( index + 1 ))
+    failures=$(( failures + 1 ))
+    fail "$name"
+    ;;
+  "# "* )
+    log "${line:2}"
+    ;;
+  esac
+done
+
+summary
+
+if [ "$failures" -gt 0 ]; then
+  exit 1
+fi
