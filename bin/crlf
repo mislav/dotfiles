@@ -1,13 +1,30 @@
 #!/usr/bin/env ruby
-## Convert Windows to Unix line breaks
+# Usage: crlf -i src/*
+#        cat src/* | crlf > cleaned.txt
+#
+# Convert Windows to Unix line breaks. Use `-i` to change files in-place.
 #
 # Author:  Mislav Marohnić  <mislav.marohnic@gmail.com>
 
-ARGV.each do |file|
-  next unless file =~ /\.\w{2,4}$/
-  text = File.read(file)
-  if text[0,3] == "\357\273\277" or text.index("\r\n")
-    File.open(file, 'w') { |f| f << text.sub("\357\273\277", '').gsub("\r\n", "\n") }
-    puts "#{file} cleansed."
+BOM = "\357\273\277"
+CRLF = "\r\n"
+
+clean = -> (text) {
+  text.sub(BOM, '').gsub(CRLF, "\n")
+}
+
+if ARGV[0] == "-i"
+  ARGV[1..-1].each do |file|
+    text = File.read(file)
+    if text.include?("\0")
+      $stderr.puts "skipping binary file #{file}"
+    elsif text.start_with?(BOM) && text.index(CRLF)
+      File.open(file, 'w') { |f| f << clean.(text) }
+      $stderr.puts "#{file} cleansed."
+    end
+  end
+else
+  ARGF.each do |line|
+    print clean.(line)
   end
 end
