@@ -7,7 +7,7 @@
 set -e
 
 gem_name="${1}"
-exe_name="${gem_name}"
+exe_name="${exe_name:-$gem_name}"
 
 case "$gem_name" in
 --help | -h )
@@ -28,6 +28,13 @@ gem="${ruby%/*}/gem"
 
 bin_file="${prefix}/bin/${exe_name}"
 gem_home="${prefix}/gems/${gem_name}"
+
+if [ ! -w "${prefix}/bin" ] || [ ! -w "${prefix}/gems" ]; then
+  sudo env prefix="$prefix" bash -c '
+    mkdir -p "$prefix/bin" "$prefix/gems"
+    chown mislav:staff "$prefix/bin" "$prefix/gems"
+  '
+fi
 
 rm -rf "$gem_home"
 
