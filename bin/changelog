@@ -1,9 +1,24 @@
 #!/bin/bash
 # vi:ft=sh:
 # Usage: changelog [<range>] [-- <directory> ...]
-set -e
+set -eu
 
-range="${1:-origin..}"
-shift 1
+if [ "$#" -gt 0 ] && [ "$1" != "--" ]; then
+  range="$1"
+  shift 1
+else
+  previous_tag=""
+  for sha in `git rev-list -n 100 --first-parent "HEAD"^`; do
+    previous_tag="$(git tag -l --points-at "$sha" 'v*' 2>/dev/null || true)"
+    [ -z "$previous_tag" ] || break
+  done
+
+  if [ -z "$previous_tag" ]; then
+    echo "Couldn't detect previous version tag" >&2
+    exit 1
+  fi
+
+  range="${previous_tag}..HEAD"
+fi
 
 git log --no-merges --format='%C(auto,green)* %s%C(auto,reset)%n%w(0,2,2)%+b' --reverse "$range" "$@"
