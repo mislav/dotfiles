@@ -1,0 +1,11 @@
+#!/bin/bash
+# Usage: js-no-comments <js-file>
+#
+# Strips comments from JavaScript file.
+set -e
+
+sed '
+  /\/\*.\{1,\}\*\//d
+  /^[[:space:]]\{0,\}\/\//d
+  /\/\*/,/\*\//d
+' "$@"
