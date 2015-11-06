@@ -3,7 +3,7 @@ set -e
 
 ssid="$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | sed -n "/ SSID:/s/^.\\{2,\\}: //p")"
 if [ -n "$ssid" ]; then
-  echo "network: $ssid"
+  echo "$ssid"
   security find-generic-password -ga "$ssid" 2>&1 >/dev/null | cut -d\" -f2
 else
   echo "No current wifi network name detected" >&2

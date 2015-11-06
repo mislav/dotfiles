@@ -54,7 +54,7 @@ host="$(curl -fsS icanhazip.com)"
 tmux="$(which tmux)"
 
 if [ -n "$github_user" ]; then
-  gh-auth add "$github_user"
+  gh-auth add --users "$github_user"
 fi
 
 if [ -z "$tmux_session" ]; then
