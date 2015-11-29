@@ -14,7 +14,6 @@ brew 'universal-ctags', args: %w[HEAD]
 brew 'bash-completion'
 brew 'openssl'
 brew 'memcached'
-brew 'mysql'
 brew 'node'
 brew 'redis'
 brew 'wget'
