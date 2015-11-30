@@ -1,0 +1,6 @@
+[submodule "garybernhardt"]
+	path = garybernhardt
+	url = https://github.com/garybernhardt/dotfiles
+[submodule "pengwynn"]
+	path = pengwynn
+	url = https://github.com/pengwynn/dotfiles

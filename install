@@ -13,6 +13,8 @@ for file in "$PWD"/*; do
   ln -sfnv ${file#$HOME/} "${HOME}/${dotname}"
 done
 
+git submodule update --init
+
 while read file; do
   bin="bin/${file##*/}"
   fullbin="${PWD}/${bin}"
