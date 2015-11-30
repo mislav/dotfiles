@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 set -e
 
-here="$(cd "${0%/*}"; pwd)"
+cd "${0%/*}"
 
-for file in "$here"/*; do
+for file in "$PWD"/*; do
   name="$(basename "$file" .md)"
   [[ $name = bin ]] && dotname="$name" || dotname=".${name}"
 
-  if ! [[ "install readme Brewfile" =~ $name || $name =~ *.plist || -e ~/$dotname || -d $file/.git ]]; then
-    ln -sfnv ${file#$HOME/} "${HOME}/${dotname}"
-  fi
+  [[ "install readme Brewfile" =~ $name ]] && continue
+  git --git-dir "${file}/.git" rev-parse --git-dir &>/dev/null && continue
+
+  ln -sfnv ${file#$HOME/} "${HOME}/${dotname}"
 done
 
 while read file; do
   bin="bin/${file##*/}"
-  fullbin="${here}/${bin}"
+  fullbin="${PWD}/${bin}"
 
-  if ! [[ -e "${here}/${file}" ]]; then
+  if ! [[ -e $file ]]; then
     echo "not found: ${file}" >&2
   elif ! [[ -e $fullbin ]]; then
     ln -sfnv "../${file}" "$fullbin"
-    echo "$bin" >> "${here}/.git/info/exclude"
+    echo "$bin" >> .git/info/exclude
   fi
-done < "${here}/.external"
+done < .external
