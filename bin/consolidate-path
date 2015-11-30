@@ -1,13 +1,12 @@
-#!/usr/bin/env zsh
+#!/bin/bash
 # Remove duplicate entries from PATH
 
-typeset -a paths result
-IFS=: paths=($1)
+result=":"
 
-while [[ ${#paths} -gt 0 ]]; do
-  p="${paths[1]}"
-  shift paths
-  [[ -z ${paths[(r)$p]} ]] && result+="$p"
+IFS=:
+for p in $1; do
+  [[ "$result" == *:"$p":* ]] || result="${result}${p}:"
 done
 
-echo ${(j+:+)result}
+result="${result#:}"
+echo "${result%:}"

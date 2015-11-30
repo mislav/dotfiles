@@ -7,6 +7,7 @@ export CLICOLOR=1
 export HISTCONTROL=ignoredups
 export EDITOR=vim
 
+PATH=/usr/local/bin:"$PATH"
 PATH=~/bin:"$PATH"
 PATH=bin:"$PATH"
 export PATH
