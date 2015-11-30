@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-case "$1" in
-  rebase) exec "${GIT_DIR:-.git}/hooks/post-merge" ;;
-esac
