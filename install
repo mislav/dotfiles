@@ -27,3 +27,9 @@ while read file; do
     echo "$bin" >> .git/info/exclude
   fi
 done < .external
+
+if ! [ -e ~/.vim ]; then
+  git clone https://github.com/mislav/vimfiles ~/.vim
+  cd ~/.vim
+  rake
+fi
