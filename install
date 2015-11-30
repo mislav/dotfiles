@@ -8,6 +8,7 @@ for file in "$PWD"/*; do
   [[ $name = bin ]] && dotname="$name" || dotname=".${name}"
 
   [[ "install readme Brewfile" =~ $name ]] && continue
+  [ -e "${HOME}/${dotname}" ] && continue
   git --git-dir "${file}/.git" rev-parse --git-dir &>/dev/null && continue
 
   ln -sfnv ${file#$HOME/} "${HOME}/${dotname}"
