@@ -22,9 +22,7 @@ unset bash_completion
 
 _git_prompt() {
   local ref="$(command git symbolic-ref -q HEAD 2>/dev/null)"
-  if [ -n "$ref" ]; then
-    echo " (${ref#refs/heads/})"
-  fi
+  echo "${ref:+ (${ref#refs/heads/})}"
 }
 
 _failed_status() {
