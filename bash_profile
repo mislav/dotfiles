@@ -8,9 +8,10 @@ export HISTCONTROL=ignoredups
 export EDITOR=vim
 
 PATH=/usr/local/bin:"$PATH"
+PATH=~/.rbenv/bin:"$PATH"
+eval "$(rbenv init -)"
 PATH=~/bin:"$PATH"
 PATH=bin:"$PATH"
-export PATH
 export PATH="$(consolidate-path "$PATH")"
 
 bash_completion="$(brew --prefix 2>/dev/null)/etc/bash_completion"
