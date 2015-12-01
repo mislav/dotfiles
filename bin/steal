@@ -13,5 +13,15 @@ fi
 
 youtube-dl --no-mtime -xo '/tmp/%(title)s.%(ext)s' "$url"
 shopt -s nullglob
-mv "$(ls -t /tmp/*.{m4a,mp3,mp4} | head -1)" \
+file="$(ls -t /tmp/*.{m4a,mp3,mp4} | head -1)"
+
+name="$(basename "$file")"
+name="${name/.m4a/.mp3}"
+name="${name/.mp4/.mp3}"
+
+destfile="/tmp/${name}"
+
+ffmpeg -i "$file" "$destfile"
+
+mv -v "$destfile" \
   "$HOME/Music/iTunes/iTunes Media/Automatically Add to iTunes/"
