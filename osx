@@ -1,3 +1,4 @@
+#!/bin/bash
 # vi:ft=sh
 # Adopted from https://github.com/mathiasbynens/dotfiles/blob/7d43ff6/.osx
 set -e

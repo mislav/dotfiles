@@ -33,3 +33,5 @@ if ! [ -e ~/.vim ]; then
   cd ~/.vim
   rake
 fi
+
+~/.osx
