@@ -56,3 +56,16 @@ defaults write com.apple.dashboard mcx-disabled -bool true
 
 # Don’t show Dashboard as a Space
 defaults write com.apple.dock dashboard-in-overlay -bool true
+
+# Remap Caps Lock to Control for all attached keyboards
+ioreg -n IOHIDKeyboard -r | awk '
+  /"VendorID"/ { vid=$(NF) }
+  /"ProductID"/ { print vid "-" $(NF) }
+' | {
+  while read keyboard; do
+    if ! defaults -currentHost read -g "com.apple.keyboard.modifiermapping.${keyboard}-0" | grep -q 'Dst = 2'; then
+      defaults -currentHost write -g "com.apple.keyboard.modifiermapping.${keyboard}-0" -array \
+        "<dict><key>HIDKeyboardModifierMappingDst</key><integer>2</integer><key>HIDKeyboardModifierMappingSrc</key><integer>0</integer></dict>"
+    fi
+  done
+}
