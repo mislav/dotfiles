@@ -18,6 +18,18 @@ defaults write com.apple.Safari IncludeDevelopMenu -bool true
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
 
+# Set Safari’s home page to `about:blank` for faster loading
+defaults write com.apple.Safari HomePage -string "about:blank"
+# Disable site favorites when focusing Safari’s URL bar
+defaults write com.apple.Safari ShowFavoritesUnderSmartSearchField -bool false
+# Disable preloading top hit in the background
+defaults write com.apple.Safari PreloadTopHit -bool false
+# Disable Quick Website Search
+defaults write com.apple.Safari WebsiteSpecificSearchEnabled -bool false
+# Stop Safari from offering to store passwords and credit card data
+defaults write com.apple.Safari AutoFillPasswords -bool false
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+
 # ?? Doesn't seem to work in El Capitan ??
 # Use plain text mode for new TextEdit documents
 # defaults write com.apple.TextEdit RichText -int 0
