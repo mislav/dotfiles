@@ -7,7 +7,7 @@ for file in "$PWD"/*; do
   name="$(basename "$file" .md)"
   [[ $name = bin ]] && dotname="$name" || dotname=".${name}"
 
-  [[ "install readme Brewfile" =~ $name ]] && continue
+  [[ "install readme" =~ $name ]] && continue
   [ -e "${HOME}/${dotname}" ] && continue
   git --git-dir "${file}/.git" rev-parse --git-dir &>/dev/null && continue
 
@@ -28,10 +28,12 @@ while read file; do
   fi
 done < .external
 
+brew bundle --global
+
 if ! [ -e ~/.vim ]; then
   git clone https://github.com/mislav/vimfiles ~/.vim
   cd ~/.vim
-  rake
+  PATH=/usr/local/bin:"$PATH" rake
 fi
 
 ~/.osx
