@@ -36,4 +36,21 @@ if ! [ -e ~/.vim ]; then
   PATH=/usr/local/bin:"$PATH" rake
 fi
 
+if ! [ -e ~/.rbenv ]; then
+  git clone https://github.com/rbenv/rbenv ~/.rbenv
+  mkdir -p ~/.rbenv/{cache,plugins}
+
+  ~/.rbenv/src/configure
+  make -C ~/.rbenv/src
+
+  if ! [ -e ~/p/ruby-build ]; then
+    mkdir -p ~/p
+    git clone https://github.com/rbenv/ruby-build ~/p/ruby-build
+  fi
+
+  ln -s ~/p/ruby-build ~/.rbenv/plugins/ruby-build
+  RUBY_CONFIGURE_OPTS=--disable-install-docs ~/.rbenv/bin/rbenv install 2.2.3
+  ~/.rbenv/bin/rbenv global 2.2.3
+fi
+
 ~/.osx
