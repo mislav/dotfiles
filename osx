@@ -63,7 +63,7 @@ ioreg -n IOHIDKeyboard -r | awk '
   /"ProductID"/ { print vid "-" $(NF) }
 ' | {
   while read keyboard; do
-    if ! defaults -currentHost read -g "com.apple.keyboard.modifiermapping.${keyboard}-0" | grep -q 'Dst = 2'; then
+    if ! defaults -currentHost read -g "com.apple.keyboard.modifiermapping.${keyboard}-0" 2>/dev/null | grep -q 'Dst = 2'; then
       defaults -currentHost write -g "com.apple.keyboard.modifiermapping.${keyboard}-0" -array \
         "<dict><key>HIDKeyboardModifierMappingDst</key><integer>2</integer><key>HIDKeyboardModifierMappingSrc</key><integer>0</integer></dict>"
     fi
