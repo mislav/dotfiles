@@ -1,0 +1,18 @@
+#!/bin/bash
+# Usage: pr <pr-number> <branch-name> [<remote-name>]
+#
+# Checks out a Pull Request from GitHub as a local branch.
+set -e
+
+[ $# -eq 0 ] && "$0" -h >&2 && exit 1
+[ "$1" = "-h" ] && exec sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
+
+num="${1?}"
+branch="${2?}"
+
+for remote in ${3:-upstream origin}; do
+  git rev-parse --verify --quiet "${remote}/HEAD" >/dev/null && break
+done
+
+git fetch "$remote" "+refs/pull/${num}/head:refs/pr/${num}"
+git checkout -b "$branch" "pr/${num}"
