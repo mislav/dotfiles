@@ -2,8 +2,6 @@
 
 Mislav's configuration files for bash, zsh, git, ruby, and more.
 
-See also: [mislav/vimfiles](https://github.com/mislav/vimfiles)
-
 ## Installation
 
 Clone somewhere, then run the `install` script:
@@ -13,9 +11,15 @@ $ git clone git://github.com/mislav/dotfiles.git ~/dotfiles
 $ ~/dotfiles/install
 ~~~
 
-It won't touch your existing dotfiles, but will symlink the ones that don't
-exist. If you want to replace your existing dotfiles, simply move them to a
-backup location and run `install` again.
+**Note that this will also install my [vimfiles][] if `~/.vim` is missing, set
+up [rbenv][] if `~/.rbenv` is missing, and install Homebrew formulae and OS X
+apps per [Brewfile](./Brewfile).** These dotfiles are tailored for me, so if
+this is too much for you to take in at once, consider cherry-picking just the
+functionality you need.
+
+The `install` script won't overwrite your existing dotfiles, but will symlink
+the ones that don't exist. If you want to replace your existing dotfiles, simply
+move them to a backup location and run `install` again.
 
 ## Misc. commands in `bin`
 
@@ -109,3 +113,7 @@ Regular tmux keybindings:
     ] paste buffer
     # list buffers
     - delete buffer
+
+
+[vimfiles]: https://github.com/mislav/vimfiles#readme
+[rbenv]: https://github.com/rbenv/rbenv#readme
