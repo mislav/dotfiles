@@ -1,0 +1,21 @@
+#!/bin/bash
+# Usage: git unpushed-branches
+#
+# Show unmerged branches that don't have a corresponding branch on the origin remote.
+set -e
+
+[ "$1" = "-h" ] && exec sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
+
+for REMOTE in upstream origin; do
+  MASTER="$(git symbolic-ref --short "refs/remotes/${REMOTE}/HEAD" 2>/dev/null)" && break
+  MASTER="${REMOTE}/master"
+done
+
+git branch --no-merged "$MASTER" | cut -b3- | \
+  while read -r branch; do
+    upstream="$(git rev-parse --symbolic-full-name "${branch}@{upstream}" 2>/dev/null || true)"
+    [ "$upstream" != "refs/remotes/${MASTER}" ] || upstream=""
+    if [ -z "$upstream" ] && ! git rev-parse --verify --quiet "${REMOTE}/${branch}" >/dev/null; then
+      echo "$branch"
+    fi
+  done
