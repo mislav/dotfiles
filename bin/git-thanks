@@ -3,10 +3,6 @@
 #
 # Show authorship info sorted by the number of commits during `<range>`.
 
-git log "$1" |
-  grep Author: |
-  sed 's/Author: \(.*\) <.*/\1/' |
-  sort |
-  uniq -c |
-  sort -rn |
+git log --format='%an' "$1" | \
+  sort | uniq -c | sort -rn | \
   sed 's/ *\([0-9]\{1,\}\) \(.*\)/\2 (\1)/'
