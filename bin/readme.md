@@ -96,8 +96,11 @@ The following is a non-comprehensive list.
 ### Writing checks
 
 * [`eprime`](./eprime)  
+  Highlights usage of the verb "to be" when you're trying to write E-Prime.
 * [`passive`](./passive)  
+  Highlights possible usage of passive language.
 * [`weasel`](./weasel)  
+  Highlights weasel words (empty words that sound like they have meaning).
 
 ### Tmux utilities
 
