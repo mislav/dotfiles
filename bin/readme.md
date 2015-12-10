@@ -25,8 +25,6 @@ The following is a non-comprehensive list.
   Displays git log in a format suitable for change log. If no range given,
   displays log from the last git tag reachable from this branch. Use
   `<directory>` to filter down entries to just files that contain runtime code.
-* [`git-amend`](./git-amend)  
-  Adds currently staged changes to the last commit.
 * [`git autofixup`](./git-autofixup)  
   Commits the staged change as a fixup for the last commit that touched the
   changed line. Useful for preparing for a `git rebase --autosquash`.
@@ -34,9 +32,6 @@ The following is a non-comprehensive list.
   Find large git objects. `<treshold>` is in MB and the default is 0.1.
 * [`git branches-that-touch <path>`](./git-branches-that-touch)  
   Searches branches that touch files under `<path>`, that are remote and unmerged.
-* [`git-churn`](./git-churn)  
-  Discover files that often change in git.
-* [`git-conflicts`](./git-conflicts)  
 * [`git longest-message [<branch>]`](./git-longest-message)  
   Displays 5 of your commits with most words per commit message body.
 * [`git overwritten [--[no-]color] [<head=HEAD>] [<base=origin>]`](./git-overwritten)  
@@ -76,8 +71,6 @@ The following is a non-comprehensive list.
 
 * [`ansi2html [-w] [--css]`](./ansi2html)  
   Convert terminal color ANSI escape sequences to HTML.
-* [`argv <args>`](./argv)  
-  Dump info about positional arguments for this command.
 * [`cat-safe <file1> [<file2>...]`](./cat-safe)  
   Like `cat`, but ensures that every file ends with a newline.
 * [`colordump [-b]`](./colordump)  
@@ -95,8 +88,6 @@ The following is a non-comprehensive list.
 
 ### System utilities
 
-* [`addr [<if>]`](./addr)  
-  Show IP address of this computer on the current local network.
 * [`battery`](./battery)  
   Show MacBook battery level formatted for tmux status bar.
 * [`wifi-pass`](./wifi-pass)  
