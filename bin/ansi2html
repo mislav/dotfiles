@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # Usage: ansi2html [-w] [--css]
 #
+# Convert terminal color ANSI escape sequences to HTML.
+#
 #   -w    : wrap HTML output in PRE tags
 #   -css  : include CSS styles
-#
-# Convert terminal color ANSI escape sequences to HTML.
 #
 # Examples:
 #

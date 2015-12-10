@@ -2,7 +2,7 @@
 # Usage: websize <URL>
 #
 # Downloads a web page including assets and displays the total size downloaded.
-# Note: doesn't take 'Content-Encoding' compression into account.
+# Note: doesn't take possible compression into account.
 
 set -e
 

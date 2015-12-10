@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
-## Usage: git big-file [HEAD [treshold]]
+# Usage: git big-file [HEAD [<treshold>]]
 #
-# Treshold is in MB (default: 0.1)
+# Find large git objects. `<treshold>` is in MB and the default is 0.1.
 
 head, treshold = ARGV
 head ||= 'HEAD'

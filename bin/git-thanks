@@ -1,11 +1,7 @@
-#!/bin/sh
-# Usage: git-thanks <since>..<until>
+#!/bin/bash
+# Usage: git thanks <range>
 #
-# All commits on master, ever:
-#   git-thanks master
-#
-# All commits on master since the 0.9.0 tag:
-#   git-thanks 0.9.0..master
+# Show authorship info sorted by the number of commits during `<range>`.
 
 git log "$1" |
   grep Author: |

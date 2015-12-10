@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Save and restore the state of tmux sessions and windows.
+#
 # TODO: persist and restore the state & position of panes.
 set -e
 

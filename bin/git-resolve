@@ -1,2 +1,6 @@
 #!/bin/sh
+# Usage: git resolve
+#
+# Mark all conflicted files as resolved.
+
 git-conflicts | xargs git add

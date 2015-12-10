@@ -1,4 +1,5 @@
 #!/bin/bash
+# Show SSID and password for the currently connected network. Requires sudo.
 set -e
 
 ssid="$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | sed -n "/ SSID:/s/^.\\{2,\\}: //p")"

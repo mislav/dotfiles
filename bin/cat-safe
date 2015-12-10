@@ -1,4 +1,7 @@
-#!/usr/bin/env ruby -wKU
+#!/usr/bin/env ruby
+# Usage: cat-safe <file1> [<file2>...]
+#
+# Like `cat`, but ensures that every file ends with a newline.
 $stdout.sync = true
 
 for path in ARGV

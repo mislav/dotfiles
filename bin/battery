@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# MacBook battery level formatted for tmux status bar
+# Show MacBook battery level formatted for tmux status bar.
+#
 # Adapted from: https://github.com/Goles/Battery
 
 battery_charge() {

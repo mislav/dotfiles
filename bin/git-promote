@@ -1,5 +1,7 @@
 #!/bin/sh
 # Usage: git promote [<remote>[/<branch>]]
+#
+# Publishes the current branch on a remote and sets up upstream tracking.
 set -e
 
 branch="$(git symbolic-ref --short HEAD)"

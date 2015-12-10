@@ -1,5 +1,7 @@
 #!/bin/bash
-# Remove duplicate entries from PATH
+# Usage: PATH="$(consolidate-path "$PATH")"
+#
+# Remove duplicate entries from PATH.
 
 result=":"
 

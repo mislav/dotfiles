@@ -1,5 +1,8 @@
 #!/bin/sh
 # Usage: colordump [-b]
+#
+# Dump a table of ASCII colors to a 256-color compatible terminal.
+# With `-b`, switch to outputting background color samples.
 set -e
 
 if [ "$1" = "-b" ]; then

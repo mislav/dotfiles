@@ -1,6 +1,10 @@
-#!/usr/bin/env bash
-# Shows git commits since the last tagged version. If library code appears to
-# be contained in `lib` or `libexec` directories, show changes pertaining to just that code.
+#!/bin/bash
+# Usage: git unreleased
+#
+# Shows git commits since the last tagged version.
+#
+# If library code appears to be contained in `lib` or `libexec` directories,
+# show changes pertaining to just that code.
 set -e
 
 paths=""

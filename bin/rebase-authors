@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# A filter that annotates `git rebase -i` input with authorship information to
+# help you avoid squashing commits together that may have been authored by
+# different people.
 set -e
 
 if [ "$1" = "--stat" ]; then
