@@ -74,7 +74,7 @@ is_ancestor() {
   git merge-base --is-ancestor "$@"
 }
 
-git fetch "$ORIGIN" --prune --quiet
+git fetch "$ORIGIN" --prune --quiet --progress
 
 MASTER="$(main_branch "$ORIGIN")" || MASTER="master"
 CURRENT_BRANCH="$(git symbolic-ref --short --quiet HEAD || true)"
