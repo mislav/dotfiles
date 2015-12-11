@@ -30,10 +30,12 @@ bin_file="${prefix}/bin/${exe_name}"
 gem_home="${prefix}/gems/${gem_name}"
 
 if [ ! -w "${prefix}/bin" ] || [ ! -w "${prefix}/gems" ]; then
-  sudo env prefix="$prefix" bash -c '
-    mkdir -p "$prefix/bin" "$prefix/gems"
-    chown mislav:staff "$prefix/bin" "$prefix/gems"
-  '
+  if ! mkdir -p "$prefix/bin" "$prefix/gems" 2>/dev/null; then
+    sudo env prefix="$prefix" bash -c '
+      mkdir -p "$prefix/bin" "$prefix/gems"
+      chown mislav:staff "$prefix/bin" "$prefix/gems"
+    '
+  fi
 fi
 
 rm -rf "$gem_home"
