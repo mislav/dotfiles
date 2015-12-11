@@ -34,6 +34,16 @@ else
   ORIGIN="origin"
 fi
 
+if [ -t 1 ]; then
+  RED=$'\e[31m'
+  GREEN=$'\e[32m'
+  RESET=$'\e[0m'
+else
+  RED=""
+  GREEN=""
+  RESET=""
+fi
+
 main_branch() {
   local remote="$1"
   local head="$(cat "${GIT_DIR}/refs/remotes/${remote}/HEAD" 2>/dev/null)"
@@ -95,7 +105,7 @@ git branch --list | \
         else
           git update-ref "refs/heads/${local_branch}" "$remote_branch"
         fi
-        echo "Updated branch $local_branch (was ${local_sha:0:7})"
+        echo "${GREEN}Updated branch $local_branch (was ${local_sha:0:7}).${RESET}"
       else
         # Local branch is ahead or diverged.
         # TODO: Decide whether to try clean merge check + rebase here.
@@ -108,7 +118,9 @@ git branch --list | \
           git checkout --quiet "$MASTER"
           CURRENT_BRANCH="$MASTER"
         fi
+        echo -n "$GREEN"
         git branch -D "$local_branch"
+        echo -n "$RESET"
       else
         echo "warning: \`$local_branch' was deleted on $ORIGIN, but appears not merged into $MASTER" >&2
       fi
