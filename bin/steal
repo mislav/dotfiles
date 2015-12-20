@@ -1,5 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 # Usage: steal <YOUTUBE-URL>
+#
+# Steals a song from YouTube and adds to to iTunes.
+#
 # Requirements: youtube-dl, ffmpeg
 set -e
 
@@ -15,13 +18,14 @@ youtube-dl --no-mtime -xo '/tmp/%(title)s.%(ext)s' "$url"
 shopt -s nullglob
 file="$(ls -t /tmp/*.{m4a,mp3,mp4} | head -1)"
 
-name="$(basename "$file")"
-name="${name/.m4a/.mp3}"
-name="${name/.mp4/.mp3}"
+case "$file" in
+*.m4a | *.mp4 )
+  destfile="${file%.*}.mp3"
+  ffmpeg -i "$file" "$destfile"
+  rm "$file"
+  file="$destfile"
+  ;;
+esac
 
-destfile="/tmp/${name}"
-
-ffmpeg -i "$file" "$destfile"
-
-mv -v "$destfile" \
-  "$HOME/Music/iTunes/iTunes Media/Automatically Add to iTunes/"
+mv -v "$file" \
+  "${HOME}/Music/iTunes/iTunes Media/Automatically Add to iTunes"*
