@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+path="${1?}"
+full_path="${GOPATH?}/src/${path}"
+mkdir -p "${full_path%/*}"
+ln -hvs "$PWD" "$full_path"

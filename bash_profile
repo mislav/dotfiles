@@ -37,3 +37,5 @@ PS1='\[\e[0;31m\]\w\[\e[m\]$(_git_prompt) \[\e[1;31m\]$(_failed_status)\[\e[m\]$
 
 # Allow <C-s> to pass through to shell and programs
 stty -ixon -ixoff
+
+export GOPATH=~/p/go
