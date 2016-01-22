@@ -1,17 +1,29 @@
 #!/bin/bash
-# Usage: git where-pr <ref>
+# Usage: git where-pr [--print] <ref>
 #
 # Opens the Pull Request on GitHub where the commit originated.
 set -e
 
-[[ -z $1 ]] && abort=1 || abort=0
+mode=open
 
-if [[ $abort -gt 0 || $1 = "-h" || $1 = "--help" ]]; then
-  sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0" >&$((abort+1))
-  exit $abort
+case "$1" in
+-h | --help )
+  sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
+  exit 0
+  ;;
+--print )
+  mode=echo
+  shift 1
+  ;;
+esac
+
+ref="$1"
+if [ -z "$ref" ]; then
+  "$0" --help >&2
+  exit 1
 fi
 
-pull_id="$(git log --merges --ancestry-path --oneline "${1}.." | awk '
+pull_id="$(git log --merges --ancestry-path --oneline "${ref}.." | awk '
   /Merge pull request #/ { sub("#", "", $5); print $5 }
 ' | tail -1)"
 
@@ -20,7 +32,7 @@ if [ -n "$pull_id" ]; then
     /^origin\t/ { print $2 }
   ' | head -1 | sed -E 's!(git@github\.com:|git://github\.com/)!https://github.com/!')"
   url="${url%.git}"
-  open "${url}/pull/${pull_id}"
+  $mode "${url}/pull/${pull_id}"
 else
   echo "Could not find pull request" >&2
   exit 1
