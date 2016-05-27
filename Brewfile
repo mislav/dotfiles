@@ -19,6 +19,7 @@ brew 'git'
 brew 'hub'
 brew 'youtube-dl'
 brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
+brew 'heroku-toolbelt'
 
 tap 'caskroom/cask'
 brew 'caskroom/cask/brew-cask'
@@ -35,3 +36,15 @@ cask 'caffeine'
 cask 'utorrent'
 cask 'vlc'
 cask 'cathode'
+cask 'virtualbox'
+cask 'virtualbox-extension-pack'
+cask 'vagrant'
+cask 'imageoptim'
+cask 'imagealpha'
+cask 'atom'
+
+mas 'iA Writer', id: 775737590
+mas 'Tweetbot', id: 557168941
+mas 'Capo', id: 696977615
+mas 'Pixelmator', id: 407963104
+mas 'GIF Brewery 3', id: 1081413713
