@@ -17,12 +17,8 @@ pid        /tmp/nginx-dir.pid;
 events { worker_connections 1024; }
 
 http {
-  types {
-    text/html               html htm shtml;
-    application/javascript  js;
-  }
+  include     $brew/etc/nginx/mime.types;
   charset     utf-8;
-
   access_log  $logdir/access_log;
 
   # client_body_temp_path /tmp/nginx-dir/client_body_temp;
@@ -41,4 +37,4 @@ http {
   }
 }" > /tmp/nginx-dir.conf
 
-exec "$brew/sbin/nginx" -c /tmp/nginx-dir.conf
+exec "$brew/bin/nginx" -c /tmp/nginx-dir.conf
