@@ -22,7 +22,6 @@ brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
 brew 'heroku-toolbelt'
 
 tap 'caskroom/cask'
-brew 'caskroom/cask/brew-cask'
 cask 'dropbox'
 cask '1password'
 cask 'spotify'
