@@ -6,6 +6,7 @@ fi
 export CLICOLOR=1
 export HISTCONTROL=ignoredups
 export EDITOR=vim
+export EVENT_NOKQUEUE=1
 
 PATH=/usr/local/bin:"$PATH"
 PATH=~/.rbenv/bin:"$PATH"
