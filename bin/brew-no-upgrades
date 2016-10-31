@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+pindir="$(brew --prefix)/var/homebrew/pinned"
+
+# back up currently pinned versions
+[ ! -e "$pindir" ] || mv "$pindir"{,.bak}
+mkdir -p "$pindir"
+
+# pin all currently installed formulae
+brew ls | xargs brew pin
+
+# execute the command specified in the arguments
+STATUS=0
+"$@" || STATUS=$?
+
+# restore previously pinned
+rm -rf "$pindir"
+[ ! -e "$pindir.bak" ] || mv "$pindir"{.bak,}
+
+exit $STATUS

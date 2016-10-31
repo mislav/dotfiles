@@ -28,7 +28,7 @@ while read file; do
   fi
 done < .external
 
-brew bundle --global
+bin/brew-no-upgrades brew bundle --global
 
 grep ^cask ~/.Brewfile | awk '{print $2}' | sed "s/[\"\"']//g" | while read cask; do
   case "$cask" in
