@@ -42,6 +42,7 @@ cask 'vagrant'
 cask 'imageoptim'
 cask 'imagealpha'
 cask 'atom'
+cask 'daisydisk'
 
 mas 'iA Writer', id: 775737590
 mas 'Tweetbot', id: 557168941
