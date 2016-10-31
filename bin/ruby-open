@@ -1,17 +1,23 @@
 #!/usr/bin/env ruby
 all = !!ARGV.delete('-a')
+debug = !!ARGV.delete('-d')
 
-unless ENV['EDITOR']
+if ENV['EDITOR'].to_s.empty?
   warn "set the EDITOR environment variable with your text editor"
   exit 1
 end
 
-finder = lambda { |file|
-  file += '.rb' if File.extname(file).empty?
-  $:.map { |p| File.join(p, file) }.find { |f| File.exists? f }
-}
+finder = lambda do |filename|
+  filename += '.rb' if File.extname(filename).empty?
+  $:.each do |dir|
+    file = File.join(dir, filename)
+    warn "testing #{file}" if debug
+    return file if File.exist?(file)
+  end
+  nil
+end
 
-found = ARGV.map { |arg| finder[arg] }.compact
+found = ARGV.map { |file| finder[file] }.compact
 found = Dir[*found.map { |path| path.sub(/\.rb$/, '*') }] if all
 
 if found.empty?
