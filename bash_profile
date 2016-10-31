@@ -11,6 +11,7 @@ export EVENT_NOKQUEUE=1
 PATH=/usr/local/bin:"$PATH"
 PATH=~/.rbenv/bin:"$PATH"
 eval "$(rbenv init -)"
+eval "$(nodenv init -)"
 PATH=~/bin:"$PATH"
 PATH=bin:"$PATH"
 export PATH="$(consolidate-path "$PATH")"

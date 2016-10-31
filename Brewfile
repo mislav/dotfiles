@@ -20,6 +20,7 @@ brew 'hub'
 brew 'youtube-dl'
 brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
 brew 'heroku-toolbelt'
+brew 'nodenv'
 
 tap 'caskroom/cask'
 cask 'dropbox'
