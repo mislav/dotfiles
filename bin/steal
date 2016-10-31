@@ -4,7 +4,7 @@
 # Steals a song from YouTube and adds to to iTunes.
 #
 # Requirements: youtube-dl, ffmpeg
-set -e
+set -euo pipefail
 
 # strip the YouTube playlist
 url="${1%%&*}"
@@ -14,12 +14,11 @@ if [ -z "$url" ]; then
   exit 1
 fi
 
-youtube-dl --no-mtime -xo '/tmp/%(title)s.%(ext)s' "$url"
-shopt -s nullglob
-file="$(ls -t /tmp/*.{m4a,mp3,mp4} | head -1)"
+file="$(youtube-dl --no-mtime -xo '/tmp/%(title)s.%(ext)s' "$url" | \
+        grep 'Destination:' | tail -1 | cut -d' ' -f3-)"
 
 case "$file" in
-*.m4a | *.mp4 )
+*.m4a | *.mp4 | *.ogg )
   destfile="${file%.*}.mp3"
   ffmpeg -i "$file" "$destfile"
   rm "$file"
