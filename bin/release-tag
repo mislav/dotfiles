@@ -1,0 +1,21 @@
+#!/bin/bash
+# Usage: release-tag <git-tag> [-- <source-files>...]
+#
+# Create a GitHub release for a specified tag. The release notes are
+# automatically populated with the contents of git log since the last tagged
+# version. The text editor will open so you have a chance to edit release notes
+# before they are published.
+#
+# List files or directories as `<source-files>` to limit the git log to only
+# changes in these locations.
+#
+# Requires: hub 2.3.0+
+set -eu
+
+release_notes() {
+  git show "$1" -s --format=%s | head -1
+  echo
+  changelog "$@"
+}
+
+hub release create "${1?}" -F <(release_notes "$@") --edit
