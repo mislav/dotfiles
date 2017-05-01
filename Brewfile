@@ -33,7 +33,6 @@ cask 'charles'
 cask 'skype'
 cask 'google-chrome'
 cask 'caffeine'
-cask 'utorrent'
 cask 'vlc'
 cask 'cathode'
 cask 'virtualbox'
@@ -49,3 +48,4 @@ mas 'Tweetbot', id: 557168941
 mas 'Capo', id: 696977615
 mas 'Pixelmator', id: 407963104
 mas 'GIF Brewery 3', id: 1081413713
+mas 'WhatsApp', id: 1147396723
