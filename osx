@@ -6,6 +6,14 @@ set -e
 # Set a blazingly fast keyboard repeat rate
 defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain InitialKeyRepeat -int 25
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Disable all sorts of autocorrection
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 # Enable full keyboard access for all controls (e.g. Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
@@ -30,19 +38,13 @@ defaults write com.apple.Safari WebsiteSpecificSearchEnabled -bool false
 # Stop Safari from offering to store passwords and credit card data
 defaults write com.apple.Safari AutoFillPasswords -bool false
 defaults write com.apple.Safari AutoFillCreditCardData -bool false
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
 
-# ?? Doesn't seem to work in El Capitan ??
-# Use plain text mode for new TextEdit documents
-# defaults write com.apple.TextEdit RichText -int 0
-# Open and save files as UTF-8 in TextEdit
-# defaults write com.apple.TextEdit PlainTextEncoding -int 4
-# defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
-
-# ?? Seems to reflect in Trackpad settings, but not take effect ??
 # Trackpad: enable tap to click for this user and for the login screen
-# defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
-# defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
-# defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
 # Use scroll gesture with the Ctrl (^) modifier key to zoom
 defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
@@ -59,20 +61,10 @@ defaults write com.apple.dashboard mcx-disabled -bool true
 # Don’t show Dashboard as a Space
 defaults write com.apple.dock dashboard-in-overlay -bool true
 
+# Automatically hide the Dock
+defaults write com.apple.dock autohide -bool true
+
 # Configure iTerm2 to read preferences from Dropbox
 defaults write com.googlecode.iterm2 PrefsCustomFolder ~/Dropbox
-
-exit 0
-# ?? Doesn't seem to work in El Capitan ??
-# Remap Caps Lock to Control for all attached keyboards
-ioreg -n IOHIDKeyboard -r | awk '
-  /"VendorID"/ { vid=$(NF) }
-  /"ProductID"/ { print vid "-" $(NF) }
-' | {
-  while read keyboard; do
-    if ! defaults -currentHost read -g "com.apple.keyboard.modifiermapping.${keyboard}-0" 2>/dev/null | grep -q 'Dst = 2'; then
-      defaults -currentHost write -g "com.apple.keyboard.modifiermapping.${keyboard}-0" -array \
-        "<dict><key>HIDKeyboardModifierMappingDst</key><integer>2</integer><key>HIDKeyboardModifierMappingSrc</key><integer>0</integer></dict>"
-    fi
-  done
-}
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -int 1
+defaults write com.googlecode.iterm2 PromptOnQuit -bool false
