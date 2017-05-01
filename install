@@ -36,7 +36,7 @@ grep ^cask ~/.Brewfile | awk '{print $2}' | sed "s/[\"\"']//g" | while read cask
     virtualbox-extension-pack | vagrant ) continue ;;
     * ) app="${cask//-/ }" ;;
   esac
-  if ! ls /Applications ~/Applications | grep -qi "$app"; then
+  if ! ls /Applications ~/Applications 2>/dev/null | grep -qi "$app"; then
     echo "warning: \`$cask' not found in /Applications" >&2
   fi
 done
