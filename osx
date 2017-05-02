@@ -67,4 +67,3 @@ defaults write com.apple.dock autohide -bool true
 # Configure iTerm2 to read preferences from Dropbox
 defaults write com.googlecode.iterm2 PrefsCustomFolder ~/Dropbox
 defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -int 1
-defaults write com.googlecode.iterm2 PromptOnQuit -bool false
