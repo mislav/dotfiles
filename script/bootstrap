@@ -60,8 +60,9 @@ if ! [ -e ~/.rbenv ]; then
   fi
 
   ln -s ~/p/ruby-build ~/.rbenv/plugins/ruby-build
-  RUBY_CONFIGURE_OPTS=--disable-install-docs ~/.rbenv/bin/rbenv install 2.2.3
-  ~/.rbenv/bin/rbenv global 2.2.3
+  ruby_version="$(~/.rbenv/bin/rbenv install --list | sed 1d | awk '{print $1}' | grep '^2\.4\.' | tail -1)"
+  RUBY_CONFIGURE_OPTS=--disable-install-docs ~/.rbenv/bin/rbenv install "$ruby_version"
+  ~/.rbenv/bin/rbenv global "$ruby_version"
 fi
 
 ~/.osx
