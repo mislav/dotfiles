@@ -8,7 +8,7 @@ Clone somewhere, then run the `install` script:
 
 ~~~ sh
 $ git clone git://github.com/mislav/dotfiles.git ~/dotfiles
-$ ~/dotfiles/install
+$ ~/dotfiles/script/bootstrap
 ~~~
 
 **Note that this will also install my [vimfiles][] if `~/.vim` is missing, set
@@ -17,9 +17,9 @@ apps per [Brewfile](./Brewfile).** These dotfiles are tailored for me, so if
 this is too much for you to take in at once, consider cherry-picking just the
 functionality you need.
 
-The `install` script won't overwrite your existing dotfiles, but will symlink
+The install script won't overwrite your existing dotfiles, but will symlink
 the ones that don't exist. If you want to replace your existing dotfiles, simply
-move them to a backup location and run `install` again.
+move them to a backup location and run install again.
 
 ## Misc. commands in `bin`
 
