@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+cd "${0%/*}"/..
+
+brew cask install dropbox 1password google-chrome
+
+./osx
+
+echo
+echo "Done! Run $PWD/script/boostrap for full setup."
