@@ -18,7 +18,7 @@ file="$(youtube-dl --no-mtime -xo '/tmp/%(title)s.%(ext)s' "$url" | \
         grep 'Destination:' | tail -1 | cut -d' ' -f3-)"
 
 case "$file" in
-*.m4a | *.mp4 | *.ogg )
+*.m4a | *.mp4 | *.ogg | *.opus )
   destfile="${file%.*}.mp3"
   ffmpeg -i "$file" "$destfile"
   rm "$file"
