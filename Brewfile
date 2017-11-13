@@ -4,7 +4,6 @@ tap 'homebrew/versions'
 tap 'universal-ctags/universal-ctags'
 
 brew 'tmux'
-brew 'reattach-to-user-namespace'
 brew 'vim'
 brew 'ag'
 brew 'universal-ctags', args: %w[HEAD]
