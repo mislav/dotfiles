@@ -20,7 +20,6 @@ brew 'youtube-dl'
 brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
 brew 'heroku-toolbelt'
 brew 'nodenv'
-brew 'chromedriver'
 brew 'yarn'
 
 tap 'caskroom/cask'
