@@ -1,0 +1,16 @@
+#!/bin/bash
+# Usage (in vim): :read !coauthor keith Kris
+set -euo pipefail
+
+STATUS=0
+for name; do
+  author="$(git log --no-merges -1 --author "$name" --format='%an <%ae>' 2>/dev/null || true)"
+  if [ -n "$author" ]; then
+    echo "Co-authored-by: $author"
+  else
+    echo "Unable to find author: $name" >&2
+    STATUS=1
+  fi
+done
+
+exit $STATUS
