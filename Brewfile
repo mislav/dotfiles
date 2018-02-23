@@ -21,6 +21,7 @@ brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
 brew 'heroku-toolbelt'
 brew 'nodenv'
 brew 'chromedriver'
+brew 'yarn'
 
 tap 'caskroom/cask'
 cask 'dropbox'
@@ -43,6 +44,7 @@ cask 'imageoptim'
 cask 'imagealpha'
 cask 'atom'
 cask 'daisydisk'
+cask 'kap'
 
 mas 'iA Writer', id: 775737590
 mas 'Tweetbot', id: 557168941
