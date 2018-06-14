@@ -22,6 +22,8 @@ if [ -r "$bash_completion" ]; then
 fi
 unset bash_completion
 
+[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
+
 _git_prompt() {
   local ref="$(command git symbolic-ref -q HEAD 2>/dev/null)"
   echo "${ref:+ (${ref#refs/heads/})}"

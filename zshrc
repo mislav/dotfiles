@@ -51,3 +51,5 @@ export GREP_COLOR='1;32'
 for file in ~/.shrc/*.sh; do
   source "$file"
 done
+
+[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
