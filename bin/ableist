@@ -1,0 +1,40 @@
+#!/bin/bash
+set -euo pipefail
+
+words=(
+  'crazies'
+  'crazy'
+  'cretins?'
+  'cripple(d|s)?'
+  'delusional'
+  'derp'
+  'dimwits?'
+  'dumb'
+  'freaks?'
+  'gimps?'
+  'hysterical'
+  'idiot(ic|s)?'
+  'imbeciles?'
+  'insane(ly)?'
+  'insanity'
+  'lame'
+  'loone?y'
+  'mad(man)?'
+  'maniacs?'
+  'midgets?'
+  'moron(ic)?'
+  'nutcase'
+  'nuts'
+  'psycho(tic)?'
+  'psychopath(ic)?'
+  'retard(ed)?'
+  'schizo(phrenic)?'
+  'spaz(zed)?'
+  'stupid'
+  'wh?ackos?'
+)
+
+IFS='|'
+if ag -iw "(${words[*]})" --ignore vendor --ignore node_modules --ignore bundle; then
+  exit 1
+fi
