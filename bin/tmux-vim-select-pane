@@ -7,7 +7,7 @@ cmd="$(basename "$cmd" | tr A-Z a-z)"
 pane_count="$(printf %d $(tmux list-panes | wc -l))"
 
 echo "${cmd}" | grep -q 'vi'
-if [[ ( $? || $pane_count == 1) ]]; then
+if [ $? == 0 ] || [ $pane_count == 1 ]; then
   case "$1" in
     '-L')
       vim_key='C-h'
