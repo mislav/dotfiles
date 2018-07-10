@@ -7,10 +7,26 @@ cmd="$(basename "$cmd" | tr A-Z a-z)"
 pane_count="$(printf %d $(tmux list-panes | wc -l))"
 
 echo "${cmd}" | grep -q 'vi'
-if [[ $? || ($pane_count = 1) ]]; then
-  direction="$(echo "${1#-}" | tr 'lLDUR' '\\hjkl')"
+if [[ ( $? || $pane_count == 1) ]]; then
+  case "$1" in
+    '-L')
+      vim_key='C-h'
+      ;;
+    '-D')
+      vim_key='C-j'
+      ;;
+    '-U')
+      vim_key='C-k'
+      ;;
+    '-R')
+      vim_key='C-l'
+      ;;
+    '-l')
+      vim_key='C-\'
+      ;;
+  esac
   # forward the keystroke to Vim
-  tmux send-keys "C-$direction"
+  tmux send-keys "$vim_key"
 else
   tmux select-pane "$@"
 fi
