@@ -35,6 +35,6 @@ words=(
 )
 
 IFS='|'
-if ag -iw "(${words[*]})" --ignore vendor --ignore node_modules --ignore bundle; then
+if ag -iw "(${words[*]})" --ignore vendor --ignore node_modules --ignore bundle "$@"; then
   exit 1
 fi
