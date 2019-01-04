@@ -8,7 +8,8 @@ export HISTCONTROL=ignoredups
 export EDITOR=vim
 export EVENT_NOKQUEUE=1
 
-PATH=/usr/local/bin:"$PATH"
+export GOPATH=~/p/go
+PATH="$GOPATH/bin":/usr/local/bin:"$PATH"
 PATH=~/.rbenv/bin:"$PATH"
 eval "$(rbenv init -)"
 eval "$(nodenv init -)"
@@ -42,7 +43,6 @@ PS1='\[\e[0;31m\]\w\[\e[m\]$(_git_prompt) \[\e[1;31m\]$(_failed_status)\[\e[m\]$
 # Allow <C-s> to pass through to shell and programs
 stty -ixon -ixoff
 
-export GOPATH=~/p/go
 
 # OPAM configuration
 . /Users/mislav/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
