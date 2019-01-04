@@ -43,6 +43,11 @@ PS1='\[\e[0;31m\]\w\[\e[m\]$(_git_prompt) \[\e[1;31m\]$(_failed_status)\[\e[m\]$
 # Allow <C-s> to pass through to shell and programs
 stty -ixon -ixoff
 
+docker_env() {
+  local machine="${1:-dev}"
+  docker-machine start $machine
+  eval "$(docker-machine env $machine)"
+}
 
 # OPAM configuration
 . /Users/mislav/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
