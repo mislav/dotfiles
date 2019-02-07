@@ -1,6 +1,5 @@
 # vi:ft=ruby:
 tap 'homebrew/services'
-tap 'homebrew/versions'
 tap 'universal-ctags/universal-ctags'
 
 brew 'tmux'
@@ -18,9 +17,7 @@ brew 'git'
 brew 'hub'
 brew 'youtube-dl'
 brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
-brew 'heroku-toolbelt'
 brew 'nodenv'
-brew 'yarn'
 
 tap 'caskroom/cask'
 cask 'dropbox'
@@ -30,7 +27,6 @@ cask 'iterm2'
 cask 'slack'
 cask 'alfred'
 cask 'charles'
-cask 'skype'
 cask 'google-chrome'
 cask 'firefox'
 cask 'caffeine'
@@ -43,7 +39,6 @@ cask 'imageoptim'
 cask 'imagealpha'
 cask 'atom'
 cask 'daisydisk'
-cask 'kap'
 
 mas 'iA Writer', id: 775737590
 mas 'Tweetbot', id: 557168941
