@@ -46,3 +46,4 @@ mas 'Capo', id: 696977615
 mas 'Pixelmator', id: 407963104
 mas 'GIF Brewery 3', id: 1081413713
 mas 'WhatsApp', id: 1147396723
+mas 'Telegram Desktop', id: 946399090
