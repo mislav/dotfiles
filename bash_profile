@@ -17,6 +17,7 @@ PATH=~/bin:"$PATH"
 PATH=bin:"$PATH"
 export PATH="$(consolidate-path "$PATH")"
 
+export HOMEBREW_NO_INSTALL_CLEANUP=true
 bash_completion="$(brew --prefix 2>/dev/null)/etc/bash_completion"
 if [ -r "$bash_completion" ]; then
   source "$bash_completion"
