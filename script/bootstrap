@@ -33,6 +33,7 @@ brew bundle --global --no-upgrade
 grep ^cask ~/.Brewfile | awk '{print $2}' | sed "s/[\"\"']//g" | while read cask; do
   case "$cask" in
     iterm2 ) app="iterm" ;;
+    zoomus ) app="zoom.us" ;;
     virtualbox-extension-pack | vagrant ) continue ;;
     * ) app="${cask//-/ }" ;;
   esac

@@ -39,6 +39,7 @@ cask 'imageoptim'
 cask 'imagealpha'
 cask 'atom'
 cask 'daisydisk'
+cask 'zoomus'
 
 mas 'iA Writer', id: 775737590
 mas 'Tweetbot', id: 557168941
