@@ -1,13 +1,9 @@
 [user]
-name = Mislav Marohnić
-email = mislav.marohnic@gmail.com
-
-[color]
-ui = true
-
+	name = Mislav Marohnić
+	email = mislav.marohnic@gmail.com
 [push]
-default = simple
-
-[alias]
-lg = log --graph --oneline --decorate
-st = status -sb
+	default = simple
+[credential]
+	helper = osxkeychain
+[hub]
+	protocol = https
