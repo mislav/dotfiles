@@ -1,0 +1,13 @@
+#!/bin/bash
+# Usage: errcolor <command> [<args...>]
+#
+# Run command, color its stderr stream in red and print its exit code.
+set -eu
+
+status=0
+"$@" 2> >(
+  while read -r line; do
+    printf "\e[0;31m%s\e[m\n" "$line"
+  done
+) || status=$?
+printf "\e[0;33mexit code: %d\e[m\n" $status
