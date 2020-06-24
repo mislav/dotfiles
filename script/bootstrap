@@ -14,44 +14,6 @@ for file in "$PWD"/*; do
   ln -sfnv ${file#$HOME/} "${HOME}/${dotname}"
 done
 
-brew bundle --global --no-upgrade
-
-grep ^cask ~/.Brewfile | awk '{print $2}' | sed "s/[\"\"']//g" | while read cask; do
-  case "$cask" in
-    iterm2 ) app="iterm" ;;
-    zoomus ) app="zoom.us" ;;
-    virtualbox-extension-pack | vagrant ) continue ;;
-    * ) app="${cask//-/ }" ;;
-  esac
-  if ! ls /Applications ~/Applications 2>/dev/null | grep -qi "$app"; then
-    echo "warning: \`$cask' not found in /Applications" >&2
-  fi
-done
-
-if ! [ -e ~/.vim ]; then
-  git clone https://github.com/mislav/vimfiles ~/.vim
-  cd ~/.vim
-  PATH=/usr/local/bin:"$PATH" rake
-fi
-
-if ! [ -e ~/.rbenv ]; then
-  git clone https://github.com/rbenv/rbenv ~/.rbenv
-  mkdir -p ~/.rbenv/{cache,plugins}
-
-  ~/.rbenv/src/configure
-  make -C ~/.rbenv/src
-
-  if ! [ -e ~/p/ruby-build ]; then
-    mkdir -p ~/p
-    git clone https://github.com/rbenv/ruby-build ~/p/ruby-build
-  fi
-
-  ln -s ~/p/ruby-build ~/.rbenv/plugins/ruby-build
-  ruby_version="$(~/.rbenv/bin/rbenv install --list | awk '{print $1}' | grep '^2\.7\.' | tail -1)"
-  RUBY_CONFIGURE_OPTS=--disable-install-docs ~/.rbenv/bin/rbenv install "$ruby_version"
-  ~/.rbenv/bin/rbenv global "$ruby_version"
-fi
-
 VSCODE_USER_DIR=~/Library/Application\ Support/Code/User
 mkdir -p "$VSCODE_USER_DIR"
 for file in "$PWD/vscode/"*; do

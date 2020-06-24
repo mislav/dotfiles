@@ -3,11 +3,11 @@ set -e
 
 cd "${0%/*}"/..
 
+./script/bootstrap
+
 type -p brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 brew cask install google-chrome slack iterm2 tmux go
 
-./osx
-
 echo
-echo "Done! Run $PWD/script/boostrap for full setup."
+echo "Done! Run $PWD/script/boostrap-slow for full setup."
