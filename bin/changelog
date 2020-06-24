@@ -19,20 +19,10 @@ if [ "$#" -gt 0 ] && [ "$1" != "--" ]; then
 fi
 
 if [ -z "$range" ]; then
-  previous_tag=""
-  for sha in `git rev-list -n 100 --first-parent "$head"^`; do
-    previous_tag="$(git tag -l --points-at "$sha" 'v*' 2>/dev/null || true)"
-    [ -z "$previous_tag" ] || break
-  done
-
-  if [ -z "$previous_tag" ]; then
-    echo "Couldn't detect previous version tag" >&2
-    exit 1
-  fi
-
+  previous_tag="$(git describe --tags --abbrev=0 "$head"^ 2>/dev/null)"
   range="${previous_tag}..${head}"
 fi
 
-git log --no-merges --format='%C(auto,green)* %s%C(auto,reset)%n%w(0,2,2)%+b' --reverse "$range" "$@"
+git log --first-parent --pretty=tformat:'%C(auto,green)* %s%C(auto,reset)%n%w(0,2,2)%+b%n' --reverse "$range" "$@"
 
 # vi:ft=sh:
