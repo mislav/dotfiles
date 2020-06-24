@@ -1,0 +1,6 @@
+// Place your key bindings in this file to override the defaults
+[{
+    "key": "ctrl+h",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Run .ts file"
+}]

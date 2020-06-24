@@ -1,0 +1,52 @@
+{
+    "workbench.startupEditor": "newUntitledFile",
+    "window.zoomLevel": 1,
+    "editor.fontSize": 13,
+    "editor.formatOnSave": true,
+    "[shellscript]": {
+        "editor.detectIndentation": false,
+        "editor.tabSize": 2
+    },
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": ["--fast"],
+    "go.buildOnSave": "off",
+    "go.vetOnSave": "off",
+    "go.useLanguageServer": true,
+    "go.languageServerExperimentalFeatures": {
+        "format": true,
+        "autoComplete": true,
+        "rename": true,
+        "goToDefinition": true,
+        "hover": true,
+        "signatureHelp": true,
+        "goToTypeDefinition": true,
+        "goToImplementation": true,
+        "documentSymbols": true,
+        "workspaceSymbols": true,
+        "findReferences": true,
+        "diagnostics": true,
+        "documentLink": true
+    },    
+    "[go]": {
+        "editor.snippetSuggestions": "none",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true,
+        }
+    },
+    "explorer.confirmDelete": false,
+    "files.associations": {
+        "*.zsh_completion": "shellscript"
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "[yaml]": {
+        "editor.autoIndent": "keep"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "git.confirmSync": false,
+    "terminal.integrated.experimentalLinkProvider": true,
+}

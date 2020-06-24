@@ -7,7 +7,7 @@ for file in "$PWD"/*; do
   name="$(basename "$file" .md)"
   [[ $name = bin ]] && dotname="$name" || dotname=".${name}"
 
-  [[ "readme script" =~ $name ]] && continue
+  [[ "readme script vscode" =~ $name ]] && continue
   [ -e "${HOME}/${dotname}" ] && continue
   git --git-dir "${file}/.git" rev-parse --git-dir &>/dev/null && continue
 
@@ -65,5 +65,12 @@ if ! [ -e ~/.rbenv ]; then
   RUBY_CONFIGURE_OPTS=--disable-install-docs ~/.rbenv/bin/rbenv install "$ruby_version"
   ~/.rbenv/bin/rbenv global "$ruby_version"
 fi
+
+VSCODE_USER_DIR=~/Library/Application\ Support/Code/User/
+mkdir -p "$VSCODE_USER_DIR"
+for file in "$PWD/vscode/"*; do
+  name="$(basename "$file")"
+  [ -e "$VSCODE_USER_DIR/$name" ] || ln -sfnv "$file" "$VSCODE_USER_DIR/$name"
+done
 
 ~/.osx
