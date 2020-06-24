@@ -1,37 +1,4 @@
-## Mislav's zsh config
-#
-# Features: tab-completion, colors, Homebrew, rbenv, nifty prompt
-
-
-# oh-my-zsh checkout (optional)
-ZSH=$HOME/.oh-my-zsh
-
-# load very few oh-my-zsh scripts
-if [ -d $ZSH ]; then
-  (){
-  local config_file plugin
-
-  # Use case-sensitive completion
-  # CASE_SENSITIVE=true
-
-  # Display red dots while waiting for completion
-  # COMPLETION_WAITING_DOTS=true
-
-  # completion:  tweaks tab completion
-  # history:     large size, ignore dups, share history
-  # terminalapp: set Terminal.app resume directory
-  for config_file (lib/completion lib/history plugins/terminalapp/terminalapp.plugin); do
-    source $ZSH/$config_file.zsh
-  done
-
-  # load specialized completions
-  for plugin (heroku gem bundler brew); do
-    fpath=($ZSH/plugins/$plugin $fpath)
-  done
-  }
-fi
-
-# Load and run compinit
+# load support for tab completions
 autoload -U compinit
 compinit -i
 
