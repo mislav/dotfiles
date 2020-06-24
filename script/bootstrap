@@ -52,7 +52,7 @@ if ! [ -e ~/.rbenv ]; then
   ~/.rbenv/bin/rbenv global "$ruby_version"
 fi
 
-VSCODE_USER_DIR=~/Library/Application\ Support/Code/User/
+VSCODE_USER_DIR=~/Library/Application\ Support/Code/User
 mkdir -p "$VSCODE_USER_DIR"
 for file in "$PWD/vscode/"*; do
   name="$(basename "$file")"
