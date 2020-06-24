@@ -3,7 +3,9 @@ set -e
 
 cd "${0%/*}"/..
 
-brew cask install dropbox 1password google-chrome
+type -p brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+brew cask install google-chrome slack iterm2 tmux go
 
 ./osx
 

@@ -1,6 +1,7 @@
 # vi:ft=ruby:
 tap 'homebrew/services'
 tap 'universal-ctags/universal-ctags'
+tap 'github/gh'
 
 brew 'tmux'
 brew 'vim'
@@ -19,9 +20,7 @@ brew 'youtube-dl'
 brew 'ffmpeg', args: %w[--with-libvpx --with-libvorbis]
 brew 'nodenv'
 
-tap 'caskroom/cask'
 cask 'dropbox'
-cask '1password'
 cask 'spotify'
 cask 'iterm2'
 cask 'slack'
