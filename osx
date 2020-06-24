@@ -61,3 +61,7 @@ defaults write com.apple.dock autohide -bool true
 # Configure iTerm2 to read preferences from Dropbox
 defaults write com.googlecode.iterm2 PrefsCustomFolder ~/Dropbox
 defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -int 1
+
+# Set lock screen text
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
+  "'Found this computer? Please contact Mislav Marohnić at mislav@github.com'"
