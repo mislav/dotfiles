@@ -1,56 +1,24 @@
-# vim:ft=sh:
+# vim:ft=sh:sw=2:ts=2:et
 if [ -r ~/.profile ]; then
   source ~/.profile
 fi
 
-export CLICOLOR=1
-export HISTCONTROL=ignoredups
-export EDITOR=vim
-export EVENT_NOKQUEUE=1
+HISTCONTROL=ignoredups
 
-export GOPATH=~/p/go
-PATH="$GOPATH/bin":/usr/local/bin:"$PATH"
-PATH=~/.rbenv/bin:"$PATH"
-eval "$(rbenv init -)"
-eval "$(nodenv init -)"
-PATH=~/bin:"$PATH"
-PATH=bin:"$PATH"
-export PATH="$(consolidate-path "$PATH")"
-
-export HOMEBREW_NO_INSTALL_CLEANUP=true
-bash_completion="$(brew --prefix 2>/dev/null)/etc/bash_completion"
-if [ -r "$bash_completion" ]; then
-  source "$bash_completion"
+HOMEBREW_PREFIX="$(brew --prefix 2>/dev/null)"
+if [ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]; then
+  source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+else
+  for HOMEBREW_COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+    [ -r "$HOMEBREW_COMPLETION" ] && source "$HOMEBREW_COMPLETION"
+  done
 fi
-unset bash_completion
-
-[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
-
-_git_prompt() {
-  local ref="$(command git symbolic-ref -q HEAD 2>/dev/null)"
-  echo "${ref:+ (${ref#refs/heads/})}"
-}
-
-_failed_status() {
-  [ "$PIPESTATUS" -ne 0 ] && printf "$"
-}
-
-_success_status() {
-  [ "$PIPESTATUS" -eq 0 ] && printf "$"
-}
-
-PS1='\[\e[0;31m\]\w\[\e[m\]$(_git_prompt) \[\e[1;31m\]$(_failed_status)\[\e[m\]$(_success_status) '
-
-eval "$(direnv hook bash)"
+unset HOMEBREW_PREFIX
+unset HOMEBREW_COMPLETION
 
 # Allow <C-s> to pass through to shell and programs
 stty -ixon -ixoff
 
-docker_env() {
-  local machine="${1:-dev}"
-  docker-machine start $machine
-  eval "$(docker-machine env $machine)"
-}
-
-# OPAM configuration
-. /Users/mislav/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+for file in ~/.shrc/*.sh; do
+  source "$file"
+done
