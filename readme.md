@@ -1,21 +1,15 @@
 # dotfiles
 
-Mislav's configuration files for bash, zsh, git, ruby, and more.
+Mislav's configuration files for bash, zsh, git, and more.
 
 ## Installation
 
-Clone somewhere, then run the `install` script:
+Clone somewhere, then run the bootstrap script:
 
 ~~~ sh
-$ git clone git://github.com/mislav/dotfiles.git ~/dotfiles
+$ git clone https://github.com/mislav/dotfiles.git ~/dotfiles
 $ ~/dotfiles/script/bootstrap
 ~~~
-
-**Note that this will also install my [vimfiles][] if `~/.vim` is missing, set
-up [rbenv][] if `~/.rbenv` is missing, and install Homebrew formulae and OS X
-apps per [Brewfile](./Brewfile).** These dotfiles are tailored for me, so if
-this is too much for you to take in at once, consider cherry-picking just the
-functionality you need.
 
 The install script won't overwrite your existing dotfiles, but will symlink
 the ones that don't exist. If you want to replace your existing dotfiles, simply
@@ -23,50 +17,7 @@ move them to a backup location and run install again.
 
 ## Misc. commands in `bin`
 
-Check [the `bin` directory](https://github.com/mislav/dotfiles/tree/master/bin) for awesome commands such as:
-
-- ansi2html
-- git-unreleased
-- pair
-- proxy
-- tmux-session
-
-## zsh
-
-- enables completions
-
-- enables Emacs key bindings:
-  - `C-a`/`C-e` - beginning/end of line
-  - `C-r`/`C-s` - incremental history search backward/forward
-
-- `C-x C-e` - edit current command-line in $EDITOR
-
-- shell prompt includes:
-  1. current directory
-  2. last command failed status indicator
-  3. git branch
-  4. rbenv version
-
-- `autobin` - whitelists current directory's `bin` dir that it should get
-  prepended to $PATH whenever we `cd` into this project and removed when we
-  leave.
-
-## ruby
-
-- `sc` - smart `script/console`; works for Rails 2, Rails 3, Sinatra
-- `ss` - smart `script/server`; works for Rails 2, Rails 3
-- `sr` - Passenger/Pow server restart (`touch tmp/restart.txt`)
-
-## git
-
-- `gl` - `git pull`
-- `gp` - `git push`
-- `gd` - `git diff`
-- `gc` - `git commit -v`
-- `gca` - `git commit -v -a`
-- `gb` - `git branch -v`
-- `st` - `git status -sb`
-- `gco` - `git checkout`
+Check [the `bin` directory](./bin) for an assortment of useful utilities.
 
 ## tmux
 
