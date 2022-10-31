@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+branch="${1?}"
+log="$(git log --reverse --no-merges --pretty='%H %an <%ae>' .."$branch")"
+sha="$(awk '{print $1; exit}' <<<"$log")"
+names="$(cut -d' ' -f2- <<<"$log" | awk '!x[$0]++' | sed 1d)"
+
+git merge --squash --no-commit "$branch"
+git commit -c "$sha" --message "$names"
