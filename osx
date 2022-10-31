@@ -56,12 +56,16 @@ defaults write com.apple.dashboard mcx-disabled -bool true
 defaults write com.apple.dock dashboard-in-overlay -bool true
 
 # Automatically hide the Dock
-defaults write com.apple.dock autohide -bool true
+if [ "$(defaults read com.apple.dock autohide 2>/dev/null)" != 1 ]; then
+  defaults write com.apple.dock autohide -bool true
+  killall Dock
+fi
 
 # Configure iTerm2 to read preferences from Dropbox
 defaults write com.googlecode.iterm2 PrefsCustomFolder ~/Dropbox
 defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -int 1
 
 # Set lock screen text
-sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
-  "'Found this computer? Please contact Mislav Marohnić at mislav@github.com'"
+[ -n "$(defaults read /Library/Preferences/com.apple.loginwindow LoginwindowText 2>/dev/null)" ] || \
+  sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
+  'Found this computer? Please contact Mislav Marohnić at mislav@github.com'
