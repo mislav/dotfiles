@@ -6,25 +6,15 @@
 # Requirements: youtube-dl, ffmpeg
 set -euo pipefail
 
-# strip the YouTube playlist
-url="${1%%&*}"
+url="${1:-}"
 
 if [ -z "$url" ]; then
   echo "no URL given" >&2
   exit 1
 fi
 
-file="$(youtube-dl --no-mtime -xo '/tmp/%(title)s.%(ext)s' "$url" | \
+file="$(youtube-dl --no-mtime --no-playlist --audio-format mp3 -xo '/tmp/%(title)s.%(ext)s' "$url" | \
         grep 'Destination:' | tail -1 | cut -d' ' -f3-)"
 
-case "$file" in
-*.m4a | *.mp4 | *.ogg | *.opus )
-  destfile="${file%.*}.mp3"
-  ffmpeg -i "$file" "$destfile"
-  rm "$file"
-  file="$destfile"
-  ;;
-esac
-
 mv -v "$file" \
-  "${HOME}/Music/iTunes/iTunes Media/Automatically Add to iTunes"*
+  "${HOME}/Music/Music/Media.localized/Automatically Add to Music"*
