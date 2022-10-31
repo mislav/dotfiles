@@ -1,6 +1,12 @@
 // Place your key bindings in this file to override the defaults
-[{
-    "key": "ctrl+h",
-    "command": "workbench.action.tasks.runTask",
-    "args": "Run .ts file"
-}]
+[
+    {
+        "key": "shift+enter",
+        "command": "go.test.cursorOrPrevious",
+        "when": "editorTextFocus && editorLangId == 'go' && !findInputFocused && !replaceActive"
+    },
+    {
+        "key": "ctrl+shift+enter",
+        "command": "go.test.package"
+    },
+]

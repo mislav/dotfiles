@@ -1,52 +1,77 @@
 {
-    "workbench.startupEditor": "newUntitledFile",
-    "window.zoomLevel": 1,
-    "editor.fontSize": 13,
+  "workbench.startupEditor": "newUntitledFile",
+  "editor.fontSize": 15,
+  "[markdown]": {
+    "editor.formatOnSave": false
+  },
+  "[shellscript]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
+  },
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    // "--fast"
+  ],
+  "go.buildOnSave": "off",
+  "go.vetOnSave": "off",
+  "[go]": {
     "editor.formatOnSave": true,
-    "[shellscript]": {
-        "editor.detectIndentation": false,
-        "editor.tabSize": 2
-    },
-    "go.lintTool": "golangci-lint",
-    "go.lintFlags": ["--fast"],
-    "go.buildOnSave": "off",
-    "go.vetOnSave": "off",
-    "go.useLanguageServer": true,
-    "go.languageServerExperimentalFeatures": {
-        "format": true,
-        "autoComplete": true,
-        "rename": true,
-        "goToDefinition": true,
-        "hover": true,
-        "signatureHelp": true,
-        "goToTypeDefinition": true,
-        "goToImplementation": true,
-        "documentSymbols": true,
-        "workspaceSymbols": true,
-        "findReferences": true,
-        "diagnostics": true,
-        "documentLink": true
-    },    
-    "[go]": {
-        "editor.snippetSuggestions": "none",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": true,
-        }
-    },
-    "explorer.confirmDelete": false,
-    "files.associations": {
-        "*.zsh_completion": "shellscript"
-    },
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
-    },
-    "[yaml]": {
-        "editor.autoIndent": "keep"
-    },
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "git.confirmSync": false,
-    "terminal.integrated.experimentalLinkProvider": true,
+      "source.organizeImports": true
+    }
+  },
+  "gopls": {
+    "ui.semanticTokens": true
+  },
+  "explorer.confirmDelete": false,
+  "files.associations": {
+    "*.zsh_completion": "shellscript",
+    "*.bats": "shellscript"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "[yaml]": {
+    "editor.autoIndent": "keep"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "git.confirmSync": false,
+  "editor.fontFamily": "'Input Mono', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.accessibilitySupport": "off",
+  "extensions.ignoreRecommendations": false,
+  "explorer.confirmDragAndDrop": false,
+  "editor.wordWrapColumn": 108,
+  "gitlens.codeLens.enabled": false,
+  "editor.minimap.enabled": false,
+  "go.toolsManagement.autoUpdate": true,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter.notebook.ipynb"
+  },
+  "workbench.editor.untitled.hint": "hidden",
+  "debug.console.fontSize": 14,
+  "terminal.integrated.fontSize": 14,
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.useEarhartModel": true,
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": false,
+    "markdown": false
+  },
+  "zenMode.fullScreen": false,
+  "window.nativeFullScreen": false,
+  "window.nativeTabs": true,
 }
