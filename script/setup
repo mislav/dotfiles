@@ -7,7 +7,7 @@ cd "${0%/*}"/..
 
 type -p brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-brew cask install google-chrome slack iterm2 tmux go
+brew bundle --global --no-upgrade
 
 echo
 echo "Done! Run $PWD/script/boostrap-slow for full setup."
