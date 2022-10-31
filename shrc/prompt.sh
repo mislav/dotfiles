@@ -26,6 +26,6 @@ elif [[ -n $ZSH_VERSION ]]; then
     [ -z "$ref" ] || printf ' %s%s%s' "$GIT_PROMPT_PREFIX" "$ref" "$GIT_PROMPT_SUFFIX"
   }
 
-  PROMPT='%{$fg[cyan]%}%~%{$reset_color%}$(_git_where) $ '
+  PROMPT=$'\n''%{$fg[cyan]%}%~%{$reset_color%}$(_git_where) $ '
 
 fi
