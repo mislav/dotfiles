@@ -1,9 +1,14 @@
 [user]
 	name = Mislav Marohnić
-	email = mislav.marohnic@gmail.com
-[push]
-	default = simple
-[credential]
-	helper = osxkeychain
-[hub]
-	protocol = https
+	email = git@mislav.net
+[init]
+	defaultBranch = main
+[core]
+	editor = vim
+	pager = delta
+[delta]
+	syntax-theme = Coldark-Dark
+	plus-style = syntax 22
+	minus-style = syntax 52
+[pull]
+	ff = only
