@@ -1,4 +1,4 @@
-## Mislav's command-line utilities for absolute winning
+## Mislav's command-line utilities
 
 The following is a non-comprehensive list.
 
@@ -71,15 +71,11 @@ The following is a non-comprehensive list.
 
 * [`ansi2html [-w] [--css]`](./ansi2html)  
   Convert terminal color ANSI escape sequences to HTML.
-* [`cat-safe <file1> [<file2>...]`](./cat-safe)  
-  Like `cat`, but ensures that every file ends with a newline.
 * [`colordump [-b]`](./colordump)  
   Dump a table of ASCII colors to a 256-color compatible terminal.
   With `-b`, switch to outputting background color samples.
 * [`crlf -i src/*`](./crlf)  
   Convert Windows to Unix line breaks. Use `-i` to change files in-place.
-* [`PATH="$(consolidate-path "$PATH")"`](./consolidate-path)  
-  Remove duplicate entries from PATH.
 * [`lineprof`](./lineprof)  
   Annotates each line of input with the number of milliseconds elapsed since
   the last line. Useful for figuring out slow points of output-producing programs.
